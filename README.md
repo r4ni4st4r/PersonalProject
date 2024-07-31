@@ -6,7 +6,7 @@
 - [X] Creazione dell'eroe in base alla scelta del giocatore
 - [X] Definizione dei primi campi di battaglia
 - [X] Selezione del campo di battaglia e assegnazione dell'avversario
-- [ ] Definizione delle funzionalità di base dello scontro 
+- [X] Definizione delle funzionalità di base dello scontro 
 - [ ] Implementazione della modalità battaglia
 - [ ] Gestire la persistenza dei dati tramite cartelle, file .json, .csv e .txt
 - [ ] Gestione degli errori durante l'interazione con il filesystem
@@ -66,10 +66,10 @@ git push -u origin main
 
 # Seconda versione
 
--  Gli attributi dei giocatori sono sono ```health, strength, stealth, magicSkill``` ed experience. Ogni classe avrà 30 punti suddivisi tra le varie skills. Experience partirà da 0 e verrà incrementata quando sarà implementata la persistenza dei dati e il salvataggio dei personaggi
--  Il personaggio ```Warrior``` avrà questi valori ```health=10 strength=15 stealth=0 magicSkill=5``` e questi due attacchi firstAttak >> charged attack (attribute strength) seconAttak >> spell (attribute magic skill)
--  Il personaggio ```Thief``` avrà questi valori ```health=8 strength=7 stealth=15 magicSkill=0``` e questi due attacchi firstAttak >> archery (attribute stealth) secondAttak >> charged attack (attribute strength)
--  Il personaggio ```Wizard``` avrà questi valori ```health=5 strength=0 stealth=5 magicSkill=20``` e questi due attacchi firstAttak >> spell (attribute magic skill) secondAttak >> archery (attribute stealth)
+-  Gli attributi dei giocatori sono sono ```health, strength, stealth, magicSkill ed experience```. Ogni classe avrà 30 punti suddivisi tra le varie skills (Il valore di health sarà moltiplicato per 10). Experience partirà da 0 e verrà incrementata quando sarà implementata la persistenza dei dati e il salvataggio dei personaggi
+-  Il personaggio ```Warrior``` avrà questi valori ```health=10 strength=15 stealth=0 magic=5``` e questi due attacchi firstAttak >> charged attack (attribute strength) seconAttak >> spell (attribute magic)
+-  Il personaggio ```Thief``` avrà questi valori ```health=8 strength=7 stealth=15 magic=0``` e questi due attacchi firstAttak >> archery (attribute stealth) secondAttak >> charged attack (attribute strength)
+-  Il personaggio ```Wizard``` avrà questi valori ```health=5 strength=0 stealth=5 magic=20``` e questi due attacchi firstAttak >> spell (attribute magic) secondAttak >> archery (attribute stealth)
 -  Abbozzata la creazione del personaggio
 
 ```csharp
@@ -440,6 +440,40 @@ Console.Write("choice: ");
 ```bash
 git status 
 git add --all
-git commit -m "Aggiunta funzionalità selezione del campo di battaglia e creazione dell'avversario"
+git commit -m "Aggiunta piccola modifica alla visualizzazione del menu principale"
+git push -u origin main
+```
+
+# Quinta versione
+
+-  Definito a livello logico il funzionamento della battaglia
+-  Aggiunta versione estremamente embrionale della funzione ```void Fight()```.
+
+```csharp
+static void Fight(){
+    Random random = new Random();
+    bool yourTurn = random.Next(2) == 1;
+    Console.Clear();
+    Console.WriteLine($"You are in a/an {environment} and your opponent is a {villainObj.cClass}");
+    while((villainObj.health && heroObj.health) > 0){
+        if(yourTurn){
+            Console.Clear();
+            Console.WriteLine("IT'S YOUR TURN! SELECT YOUR ACTION: ");
+            Console.WriteLine("1 Primary Attak!");
+            Console.WriteLine("2 Secondary Attak!");
+            Console.WriteLine("3 Try to run away!");
+            Console.Write("choice: ");
+        }else{
+        }
+    }
+}
+```
+
+## Comandi versionamento
+
+```bash
+git status 
+git add --all
+git commit -m "Iniziata l'implementazione dello scontro"
 git push -u origin main
 ```
