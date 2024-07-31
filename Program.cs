@@ -19,8 +19,10 @@ class Program{
     static void Main(string[] args){
         while(true){
             Console.Clear();
-            Console.WriteLine("1 New Hero Setup");
-            Console.WriteLine("2 Environment Selection");
+            if(!heroCreated)
+                Console.WriteLine("1 New Hero Setup");
+            if(!enviromentSelected)
+                Console.WriteLine("2 Environment Selection");
             Console.WriteLine("3 Start Game");
             Console.WriteLine("4 Exit");
             Console.Write("choice: ");

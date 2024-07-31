@@ -4,8 +4,8 @@
 
 - [X] Definizione delle caratteristiche di base e delle classi dei personaggi
 - [X] Creazione dell'eroe in base alla scelta del giocatore
-- [ ] Definizione dei primi campi di battaglia
-- [ ] Selezione del campo di battaglia e assegnazione dell'avversario
+- [X] Definizione dei primi campi di battaglia
+- [X] Selezione del campo di battaglia e assegnazione dell'avversario
 - [ ] Definizione delle funzionalità di base dello scontro 
 - [ ] Implementazione della modalità battaglia
 - [ ] Gestire la persistenza dei dati tramite cartelle, file .json, .csv e .txt
@@ -234,7 +234,7 @@ git commit -m "Completata la creazione del personaggio"
 git push -u origin main
 ```
 
-# Terza versione
+# Quarta versione A
 
 -  Implementata la funzionalità  ```Environment Selection``` con la funzione ```void SelectEnvirment()```. Permette al giocatore di scegliere tra tre campi di battaglia e crea l'avversario residente corrispondente
 -  Utilizzato un ```Dictionary<string, int[]>``` che correla il campo di battaglia con i bonus alle classi
@@ -417,6 +417,29 @@ class Program{
 ```bash
 git status 
 git add --all
-git commit -m "Completata la creazione del personaggio"
+git commit -m "Aggiunta funzionalità selezione del campo di battaglia e creazione dell'avversario"
+git push -u origin main
+```
+
+# Quarta versione B
+
+-  Semplicemente corretto il menu in modo che non visualizzi un opzione se già completata
+
+```csharp
+if(!heroCreated)
+    Console.WriteLine("1 New Hero Setup");
+if(!enviromentSelected)
+    Console.WriteLine("2 Environment Selection");
+Console.WriteLine("3 Start Game");
+Console.WriteLine("4 Exit");
+Console.Write("choice: ");
+```
+
+## Comandi versionamento
+
+```bash
+git status 
+git add --all
+git commit -m "Aggiunta funzionalità selezione del campo di battaglia e creazione dell'avversario"
 git push -u origin main
 ```
