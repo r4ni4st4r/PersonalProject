@@ -1,12 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.VisualBasic;
 using System.Dynamic;
+using System.ComponentModel;
 
 class Program{
     static int selection = 0;
     static readonly string[] characterClasses = {"Warrior", "Thief", "Wizard"}; // Classi dei personaggi
     
-    static dynamic testObj = new ExpandoObject();
+    static dynamic heroObj = new ExpandoObject();
+    static dynamic villainObj = new ExpandoObject();
+    static bool heroCreated = false;
     
     static void Main(string[] args){
         while(true){
@@ -19,7 +22,13 @@ class Program{
             int.TryParse(Console.ReadLine(), out int selection);
             switch(selection){
                 case 1:
-                    CreateNewHero();
+                    if(!heroCreated)
+                        CreateNewHero();
+                    else{
+                        Console.Clear();
+                        Console.WriteLine("You have already created an hero!\nPlease go on and press a key...");
+                        Console.ReadKey();
+                    }
                     break;
                 case 2:
                     Console.Clear();
@@ -34,6 +43,9 @@ class Program{
                 case 4:
                     return;
                 default:
+                    Console.Clear();
+                    Console.WriteLine("Enter a valid choice!\nPlease enter a key...");
+                    Console.ReadKey();
                     break;
             }
         }
@@ -58,14 +70,48 @@ class Program{
             Console.Clear();
             Console.WriteLine("Select your character class:");
             for(int i = 0; i<characterClasses.Length; i++){
-                Console.WriteLine(i+1 + characterClasses[i]);
+                Console.WriteLine($"{i+1} {characterClasses[i]}");
             }
+            Console.Write("choice: ");
             int.TryParse(Console.ReadLine(), out int selection);
             switch(selection){
+                case 1:
+                case 2:
+                case 3:
+                    NewHeroSetup(characterClasses[selection-1]);
+                    failDo = false;
+                    break;
                 default:
+                    Console.Clear();
+                    Console.WriteLine("Enter a valid choice!\nPlease enter a key...");
+                    Console.ReadKey();
                     break;
             }
         }while(failDo);
+    }
+    static void NewHeroSetup(string cClass){
+        heroObj.cClass = cClass;
+        switch(cClass){
+            case "Warrior":
+                heroObj.health = 10;
+                heroObj.strength = 15;
+                heroObj.stealth = 0;
+                heroObj.magicSkill = 5;
+                break;
+            case "Thief":
+                heroObj.health = 8;
+                heroObj.strength = 7;
+                heroObj.stealth = 15;
+                heroObj.magicSkill = 0;
+                break;
+            case "Wizard":
+                heroObj.health = 5;
+                heroObj.strength = 0;
+                heroObj.stealth = 5;
+                heroObj.magicSkill = 20;
+                break;
+        }
+        heroCreated = true;
     }
 }
 
