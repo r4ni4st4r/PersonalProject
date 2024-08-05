@@ -9,15 +9,14 @@ class Program{
     static readonly int[] warParams = {16, 0, 4, 16};  // ***************************************************
     static readonly int[] thiefParams = {8, 16, 0, 12}; // arrays con i valori degli attributi per ogni classe [0]->strength   [1]->stealth   [2]->magic [3]->health   
     static readonly int[] wizParams = {0, 8, 20, 8};   // ***************************************************
-    static readonly string[] warAttaks = {"Charged attack", "Spell"};       //****************************************
-    static readonly string[] thiefAttaks = {"Archery", "Charged attack"};   // arrays con i nomi degli attacchi primari e secondari per classe
-    static readonly string[] wizAttaks = {"Spell", "Archery"};              //****************************************
+    static readonly string[] attaks = {"Charged attack", "Archery shot", "Spell"}; // Array con i nomi degli attacchi speciali
     static string environment = "";
-    static dynamic heroObj = new ExpandoObject();
-    static dynamic villainObj = new ExpandoObject();
+    static dynamic heroObj = new ExpandoObject();   // .parameters[0]->strength  .parameters[1]->stealth  .parameters[2]->magic .parameters[3]->health
+    static dynamic villainObj = new ExpandoObject();// .parameters[0]->strength  .parameters[1]->stealth  .parameters[2]->magic .parameters[3]->health
     static bool heroCreated = false;
     static bool environmentSelected = false;
     static Random random = new Random();
+    static int hitPoints;
     
     static void Main(string[] args){
         while(true){
@@ -105,7 +104,7 @@ class Program{
                 case 1:
                 case 2:
                 case 3:
-                    heroObj = NewCharacterSetup(characterClasses[selection-1], name);
+                    heroObj = NewCharacterSetup(characterClasses[selection - 1], name);
                     failDo = false;
                     break;
                 default:
@@ -118,6 +117,7 @@ class Program{
     }
     static ExpandoObject NewCharacterSetup(string cClass, [Optional] string name){  // Funzione che assegna i valori ai parametri del personaggio in base alla classe
         dynamic charObj = new ExpandoObject();                                      // e ritorna il personaggio (eroe o avversario)
+        charObj.parameters = new int[4];
         if(name != null){
             charObj.name = name;
             heroCreated = true; 
@@ -126,28 +126,22 @@ class Program{
         charObj.cClass = cClass;
         switch(cClass){
             case "Warrior":
-                charObj.strength = warParams[0];
-                charObj.stealth = warParams[1];
-                charObj.magic = warParams[2];
-                charObj.health = warParams[3] * 10;
-                charObj.first = warAttaks[0];
-                charObj.second = warAttaks[1];
+                charObj.parameters[0] = warParams[0];       // parametro[0] = strength 
+                charObj.parameters[1] = warParams[1];       // parametro[1] = stealth 
+                charObj.parameters[2] = warParams[2];       // parametro[2] = magic 
+                charObj.parameters[3] = warParams[3] * 10;  // parametro[3] = health
                 break;
             case "Thief":
-                charObj.strength = thiefParams[0];
-                charObj.stealth = thiefParams[1];
-                charObj.magic = thiefParams[2];
-                charObj.health = thiefParams[3] * 10;
-                charObj.first = thiefAttaks[0];
-                charObj.second = thiefAttaks[1];
+                charObj.parameters[0] = thiefParams[0];
+                charObj.parameters[1] = thiefParams[1];
+                charObj.parameters[2] = thiefParams[2];
+                charObj.parameters[3] = thiefParams[3] * 10;
                 break;
             case "Wizard":
-                charObj.strength = wizParams[0];
-                charObj.stealth = wizParams[1];
-                charObj.magic = wizParams[2];
-                charObj.health = wizParams[3] * 10;
-                charObj.first = wizAttaks[0];
-                charObj.second = wizAttaks[1];
+                charObj.parameters[0] = wizParams[0];
+                charObj.parameters[1] = wizParams[1];
+                charObj.parameters[2] = wizParams[2];
+                charObj.parameters[3] = wizParams[3] * 10;
                 break;
         }
         return charObj;
@@ -196,20 +190,40 @@ class Program{
         Console.WriteLine($"\nYou are in a/an {environment} against a {villainObj.cClass}");
         Console.WriteLine($"\nPlease press a key...");
         Console.ReadKey();
-        while(villainObj.health > 0 && heroObj.health > 0){
+        while(villainObj.parameters[3] > 0 && heroObj.parameters[3] > 0){
             if(yourTurn){
                 Console.Clear();
-                Console.WriteLine("IT'S YOUR TURN! SELECT YOUR ACTION: ");
-                Console.WriteLine($"1 Attak!");
-                Console.WriteLine($"2 {heroObj.first}!");
-                Console.WriteLine($"3 {heroObj.second}!");
+                Console.WriteLine($"Your health is {heroObj.parameters[3]}!");
+                Console.WriteLine($"Your strength is {heroObj.parameters[0]}!");
+                Console.WriteLine($"Your stealth is {heroObj.parameters[1]}!");
+                Console.WriteLine($"Your magic is {heroObj.parameters[2]}!");
+                Console.WriteLine("IT'S YOUR TURN! CONSIDER YOUR PARAMETERS AND MAKE YOUR CHOICE: ");
+                Console.WriteLine($"1 {attaks[0]}");
+                Console.WriteLine($"2 {attaks[1]}!");
+                Console.WriteLine($"3 {attaks[2]}!");
                 Console.WriteLine("4 Try to run away!");
                 Console.Write("choice: ");
-                yourTurn = false;
                 int.TryParse(Console.ReadLine(), out int selection);
                 switch(selection){
                     case 1: case 2: case 3:
-                        Attak(selection-1);
+                        switch(Attak(selection-1, yourTurn)){
+                            case 0:
+                                Console.Clear();
+                                Console.WriteLine($"Your {attaks[selection-1]} had success! You hit your opponent with {hitPoints} points!\nPress a key...");
+                                Console.ReadKey();
+                                break;
+                            case 1:
+                                Console.Clear();
+                                Console.WriteLine($"Your {attaks[selection-1]} miss your opponent!\nPress a key...");
+                                Console.ReadKey(); 
+                                break;
+                            case 2:
+                                Console.Clear();
+                                Console.WriteLine($"You haven't enough points for a/an {attaks[selection-1]}!\nPress a key...");
+                                Console.ReadKey();
+                                break;    
+                        }
+                        yourTurn = false;
                         break;
                     case 4:
                         break;
@@ -221,24 +235,45 @@ class Program{
                 }
             }else{
                 Console.Clear();
+                Console.WriteLine($"Your opposite health is {villainObj.parameters[3]}!");
                 Console.WriteLine("IT'S YOUR OPPOSITE TURN!");
-                Console.WriteLine("He's going to do something...");
+                Console.WriteLine("He/she's going to do something...\nPress a key...");
                 Console.ReadKey();
                 CpuAction();
                 yourTurn = true;
             }
         }
     }
-    static void Attak(int attakType){
-        int attakExpense = (random.Next(2) == 1) ? 4 : 2; // Il costo dell'attacco speciale è definito in maniera random 2 o 4 punti
+    static int Attak(int attakType, bool turn){
+        int attakExpense = (random.Next(2) == 1) ? 4 : 2; // Il costo dell'attacco è definito in maniera random 2 o 4 punti
+        bool attakSuccess = random.Next(101) > 20;
+        if(!attakSuccess) // L'attacco non ha successo!
+            return 1; 
+        if(turn && attakExpense > heroObj.parameters[attakType]){ // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
+            return 2;
+        }else if(!turn && attakExpense > villainObj.parameters[attakType]){ // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
+            return 2;
+        }else{                                                    // Il colpo va a segno!
+            hitPoints = attakExpense * random.Next(13)/random.Next(1, 3); // calcolo dei punti
+            if(turn){
+                heroObj.parameters[attakType] -= attakExpense;
+                villainObj.parameters[3] -= hitPoints;
+            }else{
+                villainObj.parameters[attakType] -= attakExpense;
+                heroObj.parameters[3] -= hitPoints;
+            }
+            return 0;
+        }
     }
-    static void AssignBonus(){ 
-        heroObj.strength += environmentsAndBonus[environment][0];
-        heroObj.stealth += environmentsAndBonus[environment][1];
-        heroObj.magic += environmentsAndBonus[environment][2];
-        villainObj.strength += environmentsAndBonus[environment][0];
-        villainObj.stealth += environmentsAndBonus[environment][1];
-        villainObj.magic += environmentsAndBonus[environment][2];
+    static void AssignBonus(){  // Assegna il bonus enviroment!
+        heroObj.parameters[0] += environmentsAndBonus[environment][0];
+        heroObj.parameters[1] += environmentsAndBonus[environment][1];
+        heroObj.parameters[2] += environmentsAndBonus[environment][2];
+        villainObj.parameters[0] += environmentsAndBonus[environment][0];
+        villainObj.parameters[1] += environmentsAndBonus[environment][1];
+        villainObj.parameters[2] += environmentsAndBonus[environment][2];
     }
     static void CpuAction(){}
+
+    static void RechargeParameter(){}
 }
