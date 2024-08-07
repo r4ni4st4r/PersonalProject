@@ -11,8 +11,13 @@ class Program{
     static readonly int[] wizParams = {0, 8, 20, 8};   // ***************************************************
     static readonly string[] attaks = {"Charged attack", "Archery shot", "Spell"}; // Array con i nomi degli attacchi speciali
     static string environment = "";
-    static dynamic heroObj = new ExpandoObject();   // .parameters[0]->strength  .parameters[1]->stealth  .parameters[2]->magic .parameters[3]->health
-    static dynamic villainObj = new ExpandoObject();// .parameters[0]->strength  .parameters[1]->stealth  .parameters[2]->magic .parameters[3]->health
+    static dynamic heroObj = new ExpandoObject();   // .parameters[0]->strength  .parameters[1]->stealth  .parameters[2]->magic .parameters[3]->health .parameters[3]->experience
+    static dynamic villainObj = new ExpandoObject();// .parameters[0]->strength  .parameters[1]->stealth  .parameters[2]->magic .parameters[3]->health .parameters[3]->experience
+    /*
+    charObj.name            string
+    charObj.cClass          string
+    charObj.parameters[]    int[5]
+    */
     static bool heroCreated = false;
     static bool environmentSelected = false;
     static Random random = new Random();
@@ -117,7 +122,7 @@ class Program{
     }
     static ExpandoObject NewCharacterSetup(string cClass, [Optional] string name){  // Funzione che assegna i valori ai parametri del personaggio in base alla classe
         dynamic charObj = new ExpandoObject();                                      // e ritorna il personaggio (eroe o avversario)
-        charObj.parameters = new int[4];
+        charObj.parameters = new int[5];
         if(name != null){
             charObj.name = name;
             heroCreated = true; 
@@ -130,18 +135,21 @@ class Program{
                 charObj.parameters[1] = warParams[1];       // parametro[1] = stealth 
                 charObj.parameters[2] = warParams[2];       // parametro[2] = magic 
                 charObj.parameters[3] = warParams[3] * 10;  // parametro[3] = health
+                charObj.parameters[4] = 0;                  // parametro[4] = experience
                 break;
             case "Thief":
                 charObj.parameters[0] = thiefParams[0];
                 charObj.parameters[1] = thiefParams[1];
                 charObj.parameters[2] = thiefParams[2];
                 charObj.parameters[3] = thiefParams[3] * 10;
+                charObj.parameters[4] = 0;
                 break;
             case "Wizard":
                 charObj.parameters[0] = wizParams[0];
                 charObj.parameters[1] = wizParams[1];
                 charObj.parameters[2] = wizParams[2];
                 charObj.parameters[3] = wizParams[3] * 10;
+                charObj.parameters[4] = 0;
                 break;
         }
         return charObj;
@@ -201,31 +209,19 @@ class Program{
                 Console.WriteLine($"1 {attaks[0]}");
                 Console.WriteLine($"2 {attaks[1]}!");
                 Console.WriteLine($"3 {attaks[2]}!");
-                Console.WriteLine("4 Try to run away!");
+                Console.WriteLine($"4 Drink a potion to recharge your parameter!");
+                Console.WriteLine("5 Try to run away!");
                 Console.Write("choice: ");
                 int.TryParse(Console.ReadLine(), out int selection);
                 switch(selection){
                     case 1: case 2: case 3:
-                        switch(Attak(selection-1, yourTurn)){
-                            case 0:
-                                Console.Clear();
-                                Console.WriteLine($"Your {attaks[selection-1]} had success! You hit your opponent with {hitPoints} points!\nPress a key...");
-                                Console.ReadKey();
-                                break;
-                            case 1:
-                                Console.Clear();
-                                Console.WriteLine($"Your {attaks[selection-1]} miss your opponent!\nPress a key...");
-                                Console.ReadKey(); 
-                                break;
-                            case 2:
-                                Console.Clear();
-                                Console.WriteLine($"You haven't enough points for a/an {attaks[selection-1]}!\nPress a key...");
-                                Console.ReadKey();
-                                break;    
-                        }
+                        AttakResult(Attak(selection-1, yourTurn), yourTurn, selection-1);
                         yourTurn = false;
                         break;
                     case 4:
+                        RechargeParameter();
+                        break;
+                    case 5:
                         break;
                     default:
                         Console.Clear();
@@ -239,7 +235,14 @@ class Program{
                 Console.WriteLine("IT'S YOUR OPPOSITE TURN!");
                 Console.WriteLine("He/she's going to do something...\nPress a key...");
                 Console.ReadKey();
-                CpuAction();
+                if(villainObj.parameters[0]==0 && villainObj.parameters[1]==0 && villainObj.parameters[2]==0){
+                    Console.WriteLine("He/she hasn't enought points to launch an attack...\nPress a key...");
+                    Console.ReadKey();
+                    RechargeParameter();
+                }else{
+                    int attakSelection = CpuActionIa();
+                    AttakResult(Attak(attakSelection, yourTurn), yourTurn, attakSelection);
+                }
                 yourTurn = true;
             }
         }
@@ -251,10 +254,10 @@ class Program{
             return 1; 
         if(turn && attakExpense > heroObj.parameters[attakType]){ // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
             return 2;
-        }else if(!turn && attakExpense > villainObj.parameters[attakType]){ // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
+        }else if(!turn && attakExpense > villainObj.parameters[attakType]){ // Il "nemico" non ha abbastanza punti parametro per sferrare l'attacco
             return 2;
-        }else{                                                    // Il colpo va a segno!
-            hitPoints = attakExpense * random.Next(13)/random.Next(1, 3); // calcolo dei punti
+        }else{                                                              // Il colpo va a segno!
+            hitPoints = attakExpense * random.Next(1, 13)/random.Next(1, 3);   // calcolo dei punti
             if(turn){
                 heroObj.parameters[attakType] -= attakExpense;
                 villainObj.parameters[3] -= hitPoints;
@@ -273,7 +276,40 @@ class Program{
         villainObj.parameters[1] += environmentsAndBonus[environment][1];
         villainObj.parameters[2] += environmentsAndBonus[environment][2];
     }
-    static void CpuAction(){}
-
+    static int CpuActionIa(){ // Per adesso la CPU attacca con il colpo corrispondente al parametro più alto
+        int maxIndex = 0;
+        for(int i = 0; i < 3; i++){
+            maxIndex = villainObj.parameters[maxIndex] < villainObj.parameters[i] ? i : maxIndex; //
+        }
+        return maxIndex;
+    }
+    static void AttakResult(int attakResult, bool turn, int attakType){     // questa funzione stampa il risultato dell'attacco
+        switch(attakResult){                                                // prendendo come parametri anche il turno (noi o la cpu) 
+            case 0:                                                         // e il tipo di attacco
+                Console.Clear();
+                if(turn)
+                    Console.WriteLine($"Your {attaks[attakType]} had success! You hit your opponent with {hitPoints} of damage!\nPress a key...");
+                else
+                    Console.WriteLine($"Your opponent {attaks[attakType]} had success! You you were hit with {hitPoints} of damage!\nPress a key...");
+                Console.ReadKey();
+                break;
+            case 1:
+                Console.Clear();
+                if(turn)
+                    Console.WriteLine($"Your {attaks[attakType]} miss your opponent!\nPress a key...");
+                else
+                    Console.WriteLine($"Your opponent {attaks[attakType]} miss you! You are lucky!!!\nPress a key...");
+                Console.ReadKey(); 
+                break;
+            case 2:
+                Console.Clear();
+                if(turn)
+                    Console.WriteLine($"You haven't enough points for a/an {attaks[attakType]}!\nPress a key...");
+                else
+                    Console.WriteLine($"Your opponent hasn't enough points for a/an {attaks[attakType]}!\nPress a key...");
+                Console.ReadKey();
+                break;    
+            }
+    }
     static void RechargeParameter(){}
 }
