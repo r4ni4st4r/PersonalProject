@@ -8,9 +8,10 @@
 - [X] Selezione del campo di battaglia e assegnazione dell'avversario
 - [X] Definizione delle funzionalità di base dello scontro 
 - [X] Implementazione della modalità battaglia giocatore
-- [X] Implementazione della modalità battaglia CPU
+- [X] Implementazione della delle mosse della CPU
 - [ ] Gestire la persistenza dei dati tramite cartelle, file .json, .csv e .txt
 - [ ] Gestione degli errori durante l'interazione con il filesystem
+- [ ] Implementazione della modalità rigioca e la possibilità di caricare un personaggio o un avversario
 
 ## TODO list:
 
@@ -1371,5 +1372,88 @@ class Program{
 git status 
 git add --all
 git commit -m "Completato lo scontro e le scelte della CPU (semplificate)"
+git push -u origin main
+```
+
+## Ottava versione
+
+-  Quando tutti i parametri del giocatore o della CPU sono a 0 è stata implementata la funzione di ricarica
+-  Il valore minimo ricaricato sarà di 4 e il massimo sarà il massimo valore del parametro per quella classe
+-  Queste funzionalità sono state implementate con le funzioni ```void RechargeParameter(bool turn)``` e ```void RechargAssignement([Optional] int sel)```
+
+```csharp
+    static void RechargeParameter(bool turn){   // Il giocatore può scegliere che parametro ricaricare ma solo quando tutti e 3 saranno a 0
+        bool fail = true;                       // La CPU ricarica il parametro dominante della classe e solo quando ha tutti i parametri a 0
+        if(turn){                               // Il parametro si ricaricherà minimo di 4 punti sino e un massimo che sarà il massimo per la classe
+            while(fail){
+                int i = 1;
+                Console.Clear();
+                Console.WriteLine("\nSelect the parameter to recharge: ");
+                foreach(var par in parameters){
+                    Console.WriteLine($"{i} {par}");
+                    i++;
+                }
+                Console.Write("choice: ");
+                int.TryParse(Console.ReadLine(), out int selection);
+                switch(selection){
+                    case 1: case 2: case 3:
+                        RechargAssignement(selection);
+                        Console.WriteLine($"\nNow your {parameters[selection-1]} is {heroObj.parameters[selection-1]}\n\nPlease press a key...");
+                        Console.ReadKey();
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("\nEnter a valid choice!\n\nPlease press a key...");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }else{
+            RechargAssignement();
+        }
+    }
+    static void RechargAssignement([Optional] int sel){
+        if(sel!=0){
+            if(heroObj.cClass == "Warrior"){
+                if(4>=warParams[sel-1])
+                    heroObj.parameters[sel-1] = 4;
+                else
+                    heroObj.parameters[sel-1] = random.Next(heroObj.parameters[sel-1]+4,warParams[sel-1]+1);
+            }else if(heroObj.cClass == "Thief"){
+                if(4>=warParams[sel-1])
+                    heroObj.parameters[sel-1] = 4;
+                else
+                    heroObj.parameters[sel-1] = random.Next(heroObj.parameters[sel-1]+4,thiefParams[sel-1]+1);
+            }else{
+                if(4>=warParams[sel-1])
+                    heroObj.parameters[sel-1] = 4;
+                else
+                    heroObj.parameters[sel-1] = random.Next(heroObj.parameters[sel-1]+4,wizParams[sel-1]+1);
+            }
+        }else{
+            if(villainObj.cClass == "Warrior"){
+                villainObj.parameters[0] = random.Next(4,warParams[0]+1);
+                Console.Clear();
+                Console.WriteLine($"\nNow your opponent's {parameters[0]} is {villainObj.parameters[0]}\n\nPlease press a key...");
+                Console.ReadKey();
+            }if(heroObj.cClass == "Thief"){
+                villainObj.parameters[1] = random.Next(4,thiefParams[1]+1);
+                Console.Clear();
+                Console.WriteLine($"\nNow your opponent's {parameters[1]} is {villainObj.parameters[1]}\n\nPlease press a key...");
+                Console.ReadKey();
+            }else{
+                villainObj.parameters[2] = random.Next(4,wizParams[2]+1);
+                Console.Clear();
+                Console.WriteLine($"\nNow your opponent's {parameters[2]} is {villainObj.parameters[2]}\n\nPlease press a key...");
+                Console.ReadKey();
+            }
+        }
+    }
+```
+
+```bash
+git status 
+git add --all
+git commit -m "Implementata la ricarica di un parametro per giocatore e CPU"
 git push -u origin main
 ```
