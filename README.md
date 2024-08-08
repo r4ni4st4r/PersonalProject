@@ -15,8 +15,8 @@
 
 ## TODO list:
 
-- [ ] To fill
-- [ ] To fill
+- [ ] Implementare la funzionalità parata
+- [ ] Implementare la funzionalità cura
 
 ## Prima versione
 
@@ -1504,5 +1504,51 @@ git push -u origin main
 git status 
 git add --all
 git commit -m "Inserito il parametro skill, inseriti i nomi degli avversari, modificato il calcolo dei punti di attacco in base a skill, modificata la funzione RechargAssignement"
+git push -u origin main
+```
+
+## Nona versione
+
+-  Implementata la funzionalità della fuga tramite ```bool TryToRunAway()``` e le possibilità di successo sono legata al campo di battaglia e alla classe del giocatore
+-  Inserite la variabile ```heroLeak = 2```, il giocatore ha due tentativi per tentare di scappare
+
+```csharp
+static bool TryToRunAway(){ // Le possibilità di scappare sono legate al campo di battaglia con percentuali diverse a seconda della classe
+        bool success = false;
+        switch(environment){
+            case "Arena":
+                if(heroObj.cClass == "Warrior")
+                    success = random.Next(101)>50;
+                else if(heroObj.cClass == "Wizard")
+                    success = random.Next(101)>70;
+                else
+                    success = random.Next(101)>85;
+                break;
+            case "Dark city alley":
+                if(heroObj.cClass == "Warrior")
+                    success = random.Next(101)>70;
+                else if(heroObj.cClass == "Wizard")
+                    success = random.Next(101)>85;
+                else
+                    success = random.Next(101)>50;
+                break;
+            case "Ancient castle":
+                if(heroObj.cClass == "Warrior")
+                    success = random.Next(101)>85;
+                else if(heroObj.cClass == "Wizard")
+                    success = random.Next(101)>50;
+                else
+                    success = random.Next(101)>70;
+                break;
+        }
+        heroleak--;
+        return success;
+    }
+```
+
+```bash
+git status 
+git add --all
+git commit -m "Implementata la possibilità di fuggire"
 git push -u origin main
 ```

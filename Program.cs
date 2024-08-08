@@ -11,7 +11,7 @@ class Program{
     static readonly int[] wizParams = {0, 8, 20, 8};   // ***************************************************
     static readonly string[] attaks = {"Charged attack", "Archery shot", "Spell", "Try to run away!"}; // Array con i nomi degli attacchi speciali
     static readonly string[] parameters = {"Strength", "Stealth", "Magic", "Skill"}; // Array con i nomi dei parametri associati agli attacchi + skill
-    static readonly int[] skillValues = {4, 8, 12};
+    static readonly int[] skillValues = {2, 4, 8}; // parametro usato come moltiplicatore di attacco
     static readonly int[] rechargeArray = {4, 8, 12, 16, 20};
     static readonly string[] villainNames = {"Arcadius", "Zoltar", "Vinicius", "Geralth", "Howard", "Juni", "Scarsif", "Jolian", "Kilian", "Olifan"};
     static string environment = "";
@@ -26,6 +26,7 @@ class Program{
     static bool environmentSelected = false;
     static Random random = new Random();
     static int hitPoints;
+    static int heroleak;
     
     static void Main(string[] args){
         while(true){
@@ -60,6 +61,7 @@ class Program{
                     break;
                 case 3:
                     if(environmentSelected && heroCreated){
+                        heroleak = 2;
                         Fight();
                         return;
                     }else if(environmentSelected && !heroCreated){
@@ -214,32 +216,50 @@ class Program{
                     RechargeParameter(yourTurn);
                 }else{
                     Console.Clear();
-                    Console.WriteLine($"\nYour health is {heroObj.parameters[3]}!");
+                    Console.WriteLine($"\nFIGHT {heroObj.name} the {heroObj.cClass}!");
+                    Console.WriteLine($"\nYour health is {heroObj.parameters[3]}!\n");
                     Console.WriteLine($"Your strength is {heroObj.parameters[0]}!");
                     Console.WriteLine($"Your stealth is {heroObj.parameters[1]}!");
-                    Console.WriteLine($"Your magic is {heroObj.parameters[2]}!");
+                    Console.WriteLine($"Your magic is {heroObj.parameters[2]}!\n");
                     Console.WriteLine($"Your skill is {heroObj.parameters[4]}!");
                     Console.WriteLine("\nIT'S YOUR TURN! CONSIDER YOUR PARAMETERS AND MAKE YOUR CHOICE:\n");
-                    Console.WriteLine($"1 {attaks[0]}");
-                    Console.WriteLine($"2 {attaks[1]}!");
-                    Console.WriteLine($"3 {attaks[2]}!");
+                    Console.WriteLine($"1 {attaks[0]}! ({parameters[0]})");
+                    Console.WriteLine($"2 {attaks[1]}! ({parameters[1]})");
+                    Console.WriteLine($"3 {attaks[2]}! ({parameters[2]})\n");
                     Console.WriteLine($"4 {attaks[3]}\n");
                     Console.Write("\nchoice: ");
                     int.TryParse(Console.ReadLine(), out int selection);
                     switch(selection){
                         case 1: case 2: case 3:
                             AttakResult(Attak(selection-1, yourTurn), yourTurn, selection-1);
+                            yourTurn = false;
                             break;
                         case 4:
+                            if(heroleak>0){
+                                if(TryToRunAway()){
+                                    Console.Clear();
+                                    Console.WriteLine("\nYou ran away!!!\nPlease press any key...");
+                                    Console.ReadKey();
+                                    return;  //////**************** PROVVISORIO ****************/////////////
+                                }else{
+                                    Console.Clear();
+                                    Console.WriteLine("\nYou fail to run away!!!\nYou miss your turn\nPlease press any key...");
+                                    Console.ReadKey();
+                                    yourTurn = false;
+                                }
+                            }else{
+                                Console.Clear();
+                                Console.WriteLine("\nYou haven't any possibilities to run away!!!\nPlease press any key...");
+                                Console.ReadKey();
+                            }
                             break;
                         default:
                             Console.Clear();
                             Console.WriteLine("\nEnter a valid choice!\nPlease press any key...");
                             Console.ReadKey();
-                            return;  // *************** debug *************  perchè cilco infinito!
+                            return;  // *************** DEBUG PROVVISORIO *************  perchè cilco infinito!
                     }
                 }
-                yourTurn = false;
             }else{
                 Console.Clear();
                 Console.WriteLine($"Your opposite health is {villainObj.parameters[3]}!");
@@ -257,7 +277,7 @@ class Program{
                 yourTurn = true;
             }
         }
-        if(villainObj.parameters[3]<=0){
+        if(heroObj.parameters[3]<=0){
             Console.Clear();
             Console.WriteLine($"\nYou LOSE!!! You are DEAD!!!\n");
             Console.WriteLine("\nPress any key...");
@@ -274,9 +294,9 @@ class Program{
         bool attakSuccess = random.Next(101) > 20; // 80% di probabilità di centrare l'attacco
         if(!attakSuccess){ // L'attacco non ha successo!
             if(turn)
-                heroObj.parameters[attakType] -= attakExpense;
+                heroObj.parameters[attakType] = attakExpense > heroObj.parameters[attakType] ? 0 : heroObj.parameters[attakType]-attakExpense;
             else
-                villainObj.parameters[attakType] -= attakExpense;
+                villainObj.parameters[attakType] = attakExpense > villainObj.parameters[attakType] ? 0 : villainObj.parameters[attakType]-attakExpense;
             return 1;
         } 
         if(turn && attakExpense > heroObj.parameters[attakType]){ // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
@@ -285,11 +305,23 @@ class Program{
             return 2;
         }else{                                                              // Il colpo va a segno!
             if(turn){
-                hitPoints = attakExpense * random.Next(1, heroObj.parameters[4]+1); // calcolo dei punti 2 o 4 * un random tra 1 e il valore del parametro skill
+                if(heroObj.cClass == "Warrior" && attaks[attakType] == "Charged attack")    // Se il colpo è il colpo speciale della classe 
+                    hitPoints = warParams[attakType];                                       // viene aggiunto a "hitPoints" il valore di base del parametro
+                else if(heroObj.cClass == "Thief" && attaks[attakType] == "Archery shot")
+                    hitPoints = thiefParams[attakType];
+                else if(heroObj.cClass == "Thief" && attaks[attakType] == "Spell")
+                    hitPoints = wizParams[attakType];
+                hitPoints += attakExpense * random.Next(1, heroObj.parameters[4]+1); // calcolo dei punti 2 o 4 * un random tra 1 e il valore del parametro skill
                 heroObj.parameters[attakType] -= attakExpense;
                 villainObj.parameters[3] -= hitPoints;
             }else{
-                hitPoints = attakExpense * random.Next(1, villainObj.parameters[4]+1);
+                if(villainObj.cClass == "Warrior" && attaks[attakType] == "Charged attack")
+                    hitPoints = warParams[attakType];
+                else if(villainObj.cClass == "Thief" && attaks[attakType] == "Archery shot")
+                    hitPoints = thiefParams[attakType];
+                else if(villainObj.cClass == "Thief" && attaks[attakType] == "Spell")
+                    hitPoints = wizParams[attakType];
+                hitPoints += attakExpense * random.Next(1, villainObj.parameters[4]+1);
                 villainObj.parameters[attakType] -= attakExpense;
                 heroObj.parameters[3] -= hitPoints;
             }
@@ -345,8 +377,8 @@ class Program{
             while(fail){
                 Console.Clear();
                 Console.WriteLine("\nSelect the parameter to recharge: ");
-                for(int i = 1; i<parameters.Length-1;i++){
-                    Console.WriteLine($"{i} {parameters[i]}");
+                for(int i = 0; i<parameters.Length;i++){
+                    Console.WriteLine($"{i+1} {parameters[i]}");
                 }
                 Console.Write("\nchoice: ");
                 int.TryParse(Console.ReadLine(), out int selection);
@@ -395,5 +427,36 @@ class Program{
                 Console.ReadKey();
             }
         }
+    }
+    static bool TryToRunAway(){ // Le possibilità di scappare sono legate al campo di battaglia con percentuali diverse a seconda della classe
+        bool success = false;
+        switch(environment){
+            case "Arena":
+                if(heroObj.cClass == "Warrior")
+                    success = random.Next(101)>50;
+                else if(heroObj.cClass == "Wizard")
+                    success = random.Next(101)>70;
+                else
+                    success = random.Next(101)>85;
+                break;
+            case "Dark city alley":
+                if(heroObj.cClass == "Warrior")
+                    success = random.Next(101)>70;
+                else if(heroObj.cClass == "Wizard")
+                    success = random.Next(101)>85;
+                else
+                    success = random.Next(101)>50;
+                break;
+            case "Ancient castle":
+                if(heroObj.cClass == "Warrior")
+                    success = random.Next(101)>85;
+                else if(heroObj.cClass == "Wizard")
+                    success = random.Next(101)>50;
+                else
+                    success = random.Next(101)>70;
+                break;
+        }
+        heroleak--;
+        return success;
     }
 }
