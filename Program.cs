@@ -2,6 +2,8 @@
 using System.Runtime.InteropServices;
 
 class Program{
+    const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare
+    const string CONFIGPATH = @".\data\config"; // Path per i files di configurazione                                      
     static readonly string[]  characterClasses = {"Warrior", "Thief", "Wizard"}; // Classi dei personaggi
     static readonly Dictionary<string, int[]> environmentsAndBonus = new Dictionary<string, int[]> {{ "Arena", new int[] {4, 0, 2} },           // Possibili campi di battaglia e bonus per ogni classe
                                                                                                     { "Dark city alley", new int[] {2, 4, 0} }, // ["Arena"]->Warrior  ["Dark city alley"]->Thief  ["Ancient castle"]->Wizard
@@ -117,7 +119,7 @@ class Program{
                 case 1:
                 case 2:
                 case 3:
-                    heroObj = NewCharacterSetup(characterClasses[selection - 1], name);
+                    heroObj = CharacterSetup(characterClasses[selection - 1], true, name);
                     failDo = false;
                     break;
                 default:
@@ -128,7 +130,7 @@ class Program{
             }
         }while(failDo);
     }
-    static ExpandoObject NewCharacterSetup(string cClass, [Optional] string name){  // Funzione che assegna i valori ai parametri del personaggio in base alla classe
+    static ExpandoObject CharacterSetup(string cClass, bool newHero,  [Optional] string name){  // Funzione che assegna i valori ai parametri del personaggio in base alla classe
         dynamic charObj = new ExpandoObject();                                      // e ritorna il personaggio (eroe o avversario)
         charObj.parameters = new int[6];
         if(name != null){
@@ -143,24 +145,27 @@ class Program{
                 charObj.parameters[1] = warParams[1];       // parametro[1] = stealth 
                 charObj.parameters[2] = warParams[2];       // parametro[2] = magic 
                 charObj.parameters[3] = warParams[3] * 10;  // parametro[3] = health
-                charObj.parameters[5] = 0;                  // parametro[5] = experience verrà utilizzato con la persistenza dei dati
                 break;
             case "Thief":
                 charObj.parameters[0] = thiefParams[0];
                 charObj.parameters[1] = thiefParams[1];
                 charObj.parameters[2] = thiefParams[2];
                 charObj.parameters[3] = thiefParams[3] * 10;
-                charObj.parameters[5] = 0;
                 break;
             case "Wizard":
                 charObj.parameters[0] = wizParams[0];
                 charObj.parameters[1] = wizParams[1];
                 charObj.parameters[2] = wizParams[2];
                 charObj.parameters[3] = wizParams[3] * 10;
-                charObj.parameters[5] = 0;
                 break;
         }
-        charObj.parameters[4] = skillValues[random.Next(skillValues.Length-1)]; // parametro[4] = skill
+        if(newHero){
+            charObj.parameters[5] = 0;                                              // parametro[5] = experience verrà utilizzato con la persistenza dei dati
+            charObj.parameters[4] = skillValues[random.Next(skillValues.Length-1)]; // parametro[4] = skill
+        }else{
+            charObj.parameters[5] = heroObj.parameters[5];
+            charObj.parameters[4] = heroObj.parameters[4];
+        }
         return charObj;
     }
     static void SelectEnvirment(){  // Menu che permette di selezionare il campo di battaglia 
@@ -178,17 +183,17 @@ class Program{
             switch(selection){
                 case 1:
                     environment = "Arena";
-                    villainObj = NewCharacterSetup("Warrior");
+                    villainObj = CharacterSetup("Warrior", true);
                     fail = false;
                     break;
                 case 2:
                     environment = "Dark city alley";
-                    villainObj = NewCharacterSetup("Thief");
+                    villainObj = CharacterSetup("Thief", true);
                     fail = false;
                     break;
                 case 3:
                     environment = "Ancient castle";
-                    villainObj = NewCharacterSetup("Wizard");
+                    villainObj = CharacterSetup("Wizard", true);
                     fail = false;
                     break;
                 default:
@@ -277,7 +282,7 @@ class Program{
                 yourTurn = true;
             }
         }
-        if(heroObj.parameters[3]<=0){
+        if(heroObj.parameters[3] <= 0){
             Console.Clear();
             Console.WriteLine($"\nYou LOSE!!! You are DEAD!!!\n");
             Console.WriteLine("\nPress any key...");
@@ -290,9 +295,9 @@ class Program{
         }
     }
     static int Attak(int attakType, bool turn){
-        int attakExpense = (random.Next(2) == 1) ? 4 : 2; // Il costo dell'attacco è definito in maniera random 2 o 4 punti
-        bool attakSuccess = random.Next(101) > 20; // 80% di probabilità di centrare l'attacco
-        if(!attakSuccess){ // L'attacco non ha successo!
+        int attakExpense = (random.Next(2) == 1) ? 4 : 2;   // Il costo dell'attacco è definito in maniera random 2 o 4 punti
+        bool attakSuccess = random.Next(101) > 20;          // 80% di probabilità di centrare l'attacco
+        if(!attakSuccess){                                  // L'attacco non ha successo!
             if(turn)
                 heroObj.parameters[attakType] = attakExpense > heroObj.parameters[attakType] ? 0 : heroObj.parameters[attakType]-attakExpense;
             else
@@ -458,5 +463,30 @@ class Program{
         }
         heroleak--;
         return success;
+    }
+    static void SaveHero(){}
+
+    static void SaveMenu(){
+        bool success = false;
+        while(!success){
+            Console.Clear();
+            Console.WriteLine($"\nDo you want to save {heroObj.name} the {heroObj.cClass}\n");
+            Console.WriteLine($"1 YES!");
+            Console.WriteLine($"2 NO!");
+            Console.Write("\nchoice: ");
+            int.TryParse(Console.ReadLine(), out int selection);
+            switch(selection){
+                case 1:
+                    SaveHero();
+                    break;
+                case 2:
+                    break;
+                default:
+                    Console.Clear();
+                    Console.WriteLine("\nEnter a valid choice!\nPlease press any key...");
+                    Console.ReadKey();
+                    break;
+            }
+        }
     }
 }

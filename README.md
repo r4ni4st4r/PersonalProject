@@ -1552,3 +1552,48 @@ git add --all
 git commit -m "Implementata la possibilità di fuggire"
 git push -u origin main
 ```
+
+## Nona versione
+
+-  Creata la struttura per le cartelle di salvataggio e configurazione
+-  Impostate le funzioni ```static void SaveMenu()``` e ```static void SaveHero()```
+-  Modificata la funzione ```static ExpandoObject CharacterSetup(string cClass, bool newHero,  [Optional] string name)``` con il parametro ```newHero``` che resetta tutti i parametri a default ranne ```experience``` e ```skill```
+
+```csharp
+    const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare
+    const string CONFIGPATH = @".\data\config"; // Path per i files di configurazione   
+    
+    static void SaveHero(){}
+
+    static void SaveMenu(){
+        bool success = false;
+        while(!success){
+            Console.Clear();
+            Console.WriteLine($"\nDo you want to save {heroObj.name} the {heroObj.cClass}\n");
+            Console.WriteLine($"1 YES!");
+            Console.WriteLine($"2 NO!");
+            Console.Write("\nchoice: ");
+            int.TryParse(Console.ReadLine(), out int selection);
+            switch(selection){
+                case 1:
+                    SaveHero();
+                    break;
+                case 2:
+                    break;
+                default:
+                    Console.Clear();
+                    Console.WriteLine("\nEnter a valid choice!\nPlease press any key...");
+                    Console.ReadKey();
+                    break;
+            }
+        }
+    }
+```
+
+```bash
+git status 
+git add --all
+git commit -m "Iniziato a implementare il salvataggio"
+git push -u origin main
+```
+
