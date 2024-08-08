@@ -1375,9 +1375,9 @@ git commit -m "Completato lo scontro e le scelte della CPU (semplificate)"
 git push -u origin main
 ```
 
-## Ottava versione
+## Ottava versione A
 
--  Quando tutti i parametri del giocatore o della CPU sono a 0 è stata implementata la funzione di ricarica
+-  Quando tutti i parametri del giocatore o della CPU sono a 0 è stata implementata la funzione di ricarica di un parametro
 -  Il valore minimo ricaricato sarà di 4 e il massimo sarà il massimo valore del parametro per quella classe
 -  Queste funzionalità sono state implementate con le funzioni ```void RechargeParameter(bool turn)``` e ```void RechargAssignement([Optional] int sel)```
 
@@ -1455,5 +1455,54 @@ git push -u origin main
 git status 
 git add --all
 git commit -m "Implementata la ricarica di un parametro per giocatore e CPU"
+git push -u origin main
+```
+
+## Ottava versione B
+
+-  Inserito il parametro ```Skill``` assegnato in fase di creazione del personaggio (che in futuro interagirà con experience). Questo parametro è determinante per calcolare con quanti punti colpisce il giocatore nell'attacco
+-  Modifica della funzione ```void RechargAssignement([Optional] int sel)``` che ora ricarica il parametro con un multiplo di 4 random sino al massimo del parametro per quella classe 
+-  Inserito il nome random tra 10 disponibili all'avversario
+
+```csharp
+    static readonly int[] skillValues = {4, 8, 12};
+    static readonly int[] rechargeArray = {4, 8, 12, 16, 20};
+    static readonly string[] villainNames = {"Arcadius", "Zoltar", "Vinicius", "Geralth", "Howard", "Juni", "Scarsif", "Jolian", "Kilian", "Olifan"};
+
+    static void RechargAssignement([Optional] int sel){
+        int rechValue = rechargeArray[random.Next(rechargeArray.Length)];;
+        if(sel!=0){
+            if(heroObj.cClass == "Warrior"){
+                heroObj.parameters[sel-1] = rechValue <= warParams[sel-1] ? rechValue : warParams[sel-1];
+            }else if(heroObj.cClass == "Thief"){
+                heroObj.parameters[sel-1] = rechValue <= thiefParams[sel-1] ? rechValue : thiefParams[sel-1];
+            }else{
+                heroObj.parameters[sel-1] =  rechValue <= wizParams[sel-1] ? rechValue : wizParams[sel-1];
+            }
+        }else{
+            if(villainObj.cClass == "Warrior"){
+                villainObj.parameters[0] = rechValue <= warParams[0] ? rechValue : warParams[0];
+                Console.Clear();
+                Console.WriteLine($"\nNow your opponent's {parameters[0]} is {villainObj.parameters[0]}\n\nPlease press any key...");
+                Console.ReadKey();
+            }if(heroObj.cClass == "Thief"){
+                villainObj.parameters[1] = rechValue <= thiefParams[1] ? rechValue : thiefParams[1];
+                Console.Clear();
+                Console.WriteLine($"\nNow your opponent's {parameters[1]} is {villainObj.parameters[1]}\n\nPlease press any key...");
+                Console.ReadKey();
+            }else{
+                villainObj.parameters[2] = rechValue <= wizParams[2] ? rechValue : wizParams[2];
+                Console.Clear();
+                Console.WriteLine($"\nNow your opponent's {parameters[2]} is {villainObj.parameters[2]}\n\nPlease press any key...");
+                Console.ReadKey();
+            }
+        }
+    }
+```
+
+```bash
+git status 
+git add --all
+git commit -m "Inserito il parametro skill, inseriti i nomi degli avversari, modificato il calcolo dei punti di attacco in base a skill, modificata la funzione RechargAssignement"
 git push -u origin main
 ```
