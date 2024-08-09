@@ -1,5 +1,6 @@
 ﻿using System.Dynamic;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 
 class Program{
     const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare
@@ -11,7 +12,7 @@ class Program{
     static readonly int[] warParams = {16, 0, 4, 16};  // ***************************************************
     static readonly int[] thiefParams = {8, 16, 0, 12}; // arrays con i valori degli attributi per ogni classe [0]->strength   [1]->stealth   [2]->magic [3]->health [4]->skill   
     static readonly int[] wizParams = {0, 8, 20, 8};   // ***************************************************
-    static readonly string[] attaks = {"Charged attack", "Archery shot", "Spell", "Try to run away!"}; // Array con i nomi degli attacchi speciali
+    static readonly string[] attaks = {"Charged attack", "Archery shot", "Spell", "Try to run away"}; // Array con i nomi degli attacchi + Try to run away
     static readonly string[] parameters = {"Strength", "Stealth", "Magic", "Skill"}; // Array con i nomi dei parametri associati agli attacchi + skill
     static readonly int[] skillValues = {2, 4, 8}; // parametro usato come moltiplicatore di attacco
     static readonly int[] rechargeArray = {4, 8, 12, 16, 20};
@@ -20,31 +21,35 @@ class Program{
     /*
     charObj.name            string
     charObj.cClass          string
-    charObj.parameters[]    int[6]
+    charObj.parameters[]    int[7]
     */
-    static dynamic heroObj = new ExpandoObject();   //  .parameters[0]->strength  .parameters[1]->stealth  .parameters[2]->magic 
-    static dynamic villainObj = new ExpandoObject();//  .parameters[3]->health   .parameters[4]->skill .parameters[5]->experience
-    static bool heroCreated = false;
+    static dynamic heroObj = new ExpandoObject();   //  .parameters[0] -> strength  .parameters[1] -> stealth  .parameters[2] -> magic 
+    static dynamic villainObj = new ExpandoObject();//  .parameters[3] -> health   .parameters[4] -> skill .parameters[5] -> experience .parameters[6] -> file name
+    static bool heroSelected = false;
     static bool environmentSelected = false;
     static Random random = new Random();
     static int hitPoints;
-    static int heroleak;
+    static int heroLeak;
+    static bool saveMenu = false;
     
     static void Main(string[] args){
-        while(true){
+        bool mainMenu = true;
+        while(mainMenu){
             Console.Clear();
             Console.WriteLine("\n");
-            if(!heroCreated)
+            if(!heroSelected){
                 Console.WriteLine("1 New Hero");
+                Console.WriteLine("2 Load Hero");
+            }
             if(!environmentSelected)
-                Console.WriteLine("2 Environment");
-            Console.WriteLine("3 Fight!");
-            Console.WriteLine("4 Exit\n");
+                Console.WriteLine("3 Environment");
+            Console.WriteLine("4 Fight!");
+            Console.WriteLine("5 Exit\n");
             Console.Write("choice: ");
             int.TryParse(Console.ReadLine(), out int selection);
             switch(selection){
                 case 1:
-                    if(!heroCreated)
+                    if(!heroSelected)
                         CreateNewHero();
                     else{
                         Console.Clear();
@@ -53,6 +58,15 @@ class Program{
                     }
                     break;
                 case 2:
+                    if(!heroSelected)
+                        LoadHero();
+                    else{
+                        Console.Clear();
+                        Console.WriteLine("\nYou have already created an hero!\nPlease go on! press any key...\n");
+                        Console.ReadKey();
+                    }
+                    break;
+                case 3:
                     if(!environmentSelected)
                         SelectEnvirment();
                     else{
@@ -61,16 +75,17 @@ class Program{
                         Console.ReadKey();
                     }
                     break;
-                case 3:
-                    if(environmentSelected && heroCreated){
-                        heroleak = 2;
+                case 4:
+                    if(environmentSelected && heroSelected){
+                        heroLeak = 2;
                         Fight();
-                        return;
-                    }else if(environmentSelected && !heroCreated){
+                        mainMenu = false;
+                        break;
+                    }else if(environmentSelected && !heroSelected){
                         Console.Clear();
                         Console.WriteLine("\nYou have to create an hero!\nPlease create it! press any key...\n");
                         Console.ReadKey();
-                    }else if(!environmentSelected && heroCreated){
+                    }else if(!environmentSelected && heroSelected){
                         Console.Clear();
                         Console.WriteLine("\nYou have to select an environment!\nPlease select it! press any key...\n");
                         Console.ReadKey();
@@ -80,7 +95,7 @@ class Program{
                         Console.ReadKey();
                     }
                     break;
-                case 4:
+                case 5:
                     return;
                 default:
                     Console.Clear();
@@ -88,6 +103,9 @@ class Program{
                     Console.ReadKey();
                     break;
             }
+        }
+        if(saveMenu){
+            SaveMenu();
         }
     }
     static private void CreateNewHero(){  // Funzione per selezionare il nome e la classe di un nuovo personaggio
@@ -97,7 +115,7 @@ class Program{
         do{
             while(failWhile){
                 Console.Clear();
-                Console.WriteLine("Please select a name for your hero: ");
+                Console.WriteLine("Please enter your hero's name: ");
                 name = Console.ReadLine();
                 if(name != ""){
                     heroObj.name = name;
@@ -132,12 +150,12 @@ class Program{
     }
     static ExpandoObject CharacterSetup(string cClass, bool newHero,  [Optional] string name){  // Funzione che assegna i valori ai parametri del personaggio in base alla classe
         dynamic charObj = new ExpandoObject();                                      // e ritorna il personaggio (eroe o avversario)
-        charObj.parameters = new int[6];
+        charObj.parameters = new int[7];
         if(name != null){
             charObj.name = name;
-            heroCreated = true; 
+            heroSelected = true; 
         }else
-            charObj.name = villainNames[random.Next(villainNames.Length)]+" the "+cClass;
+            charObj.name = villainNames[random.Next(villainNames.Length)] + " the " + cClass;
         charObj.cClass = cClass;
         switch(cClass){
             case "Warrior":
@@ -160,11 +178,14 @@ class Program{
                 break;
         }
         if(newHero){
-            charObj.parameters[5] = 0;                                              // parametro[5] = experience verrà utilizzato con la persistenza dei dati
-            charObj.parameters[4] = skillValues[random.Next(skillValues.Length-1)]; // parametro[4] = skill
+            charObj.parameters[5] = 0;                                                                              // parameters[5] = experience verrà utilizzato con la persistenza dei dati
+            charObj.parameters[4] = skillValues[random.Next(skillValues.Length-1)];                                 // parameters[4] = skill
+            charObj.parameters[6] = Convert.ToInt32(File.ReadAllText(Path.Combine(CONFIGPATH, "fileName.txt")));    // parameters[6] = file name
         }else{
             charObj.parameters[5] = heroObj.parameters[5];
             charObj.parameters[4] = heroObj.parameters[4];
+            charObj.parameters[6] = heroObj.parameters[6];
+            heroSelected = true;
         }
         return charObj;
     }
@@ -206,13 +227,14 @@ class Program{
         environmentSelected = true;
     }
     static void Fight(){
+        bool ranAway = false;
         AssignBonus(); // Prima dell'inizio vengono incrementati i valori dei parametri dei personaggi col bonus legato al campo di battaglia
         bool yourTurn = random.Next(2) == 1; // Chi inizia la battaglia è definito in modo random
         Console.Clear();
         Console.WriteLine($"\nYou are in a/an {environment} against {villainObj.name}");
         Console.WriteLine($"\nPlease press any key...");
         Console.ReadKey();
-        while(villainObj.parameters[3] > 0 && heroObj.parameters[3] > 0){
+        while(villainObj.parameters[3] > 0 && heroObj.parameters[3] > 0 && !ranAway){
             if(yourTurn){
                 if(heroObj.parameters[0] == 0 && heroObj.parameters[1] == 0 && heroObj.parameters[2] == 0){
                     Console.Clear();
@@ -240,12 +262,14 @@ class Program{
                             yourTurn = false;
                             break;
                         case 4:
-                            if(heroleak>0){
+                            if(heroLeak > 0){
                                 if(TryToRunAway()){
                                     Console.Clear();
                                     Console.WriteLine("\nYou ran away!!!\nPlease press any key...");
                                     Console.ReadKey();
-                                    return;  //////**************** PROVVISORIO ****************/////////////
+                                    ranAway = true;
+                                    saveMenu = true;
+                                    break;
                                 }else{
                                     Console.Clear();
                                     Console.WriteLine("\nYou fail to run away!!!\nYou miss your turn\nPlease press any key...");
@@ -262,7 +286,7 @@ class Program{
                             Console.Clear();
                             Console.WriteLine("\nEnter a valid choice!\nPlease press any key...");
                             Console.ReadKey();
-                            return;  // *************** DEBUG PROVVISORIO *************  perchè cilco infinito!
+                            break;
                     }
                 }
             }else{
@@ -287,7 +311,16 @@ class Program{
             Console.WriteLine($"\nYou LOSE!!! You are DEAD!!!\n");
             Console.WriteLine("\nPress any key...");
             Console.ReadKey();
-        }else{
+            string filePath = Path.Combine(Path.Combine(SAVEPATH, heroObj.parameters[6] + ".json")); 
+            if(File.Exists(filePath)){
+                File.Delete(filePath);
+                Console.Clear();
+                Console.WriteLine($"\nYour Hero is been deleted!!!\n");
+                Console.WriteLine("\nPress any key...");
+                Console.ReadKey();
+            }
+        }else if(!ranAway){
+            saveMenu = true;
             Console.Clear();
             Console.WriteLine($"\nYou WIN!!! Your opponent is DEAD!!!\n");
             Console.WriteLine("\nPress any key...");
@@ -299,9 +332,9 @@ class Program{
         bool attakSuccess = random.Next(101) > 20;          // 80% di probabilità di centrare l'attacco
         if(!attakSuccess){                                  // L'attacco non ha successo!
             if(turn)
-                heroObj.parameters[attakType] = attakExpense > heroObj.parameters[attakType] ? 0 : heroObj.parameters[attakType]-attakExpense;
+                heroObj.parameters[attakType] = attakExpense >= heroObj.parameters[attakType] ? 0 : heroObj.parameters[attakType] - attakExpense;
             else
-                villainObj.parameters[attakType] = attakExpense > villainObj.parameters[attakType] ? 0 : villainObj.parameters[attakType]-attakExpense;
+                villainObj.parameters[attakType] = attakExpense >= villainObj.parameters[attakType] ? 0 : villainObj.parameters[attakType] - attakExpense;
             return 1;
         } 
         if(turn && attakExpense > heroObj.parameters[attakType]){ // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
@@ -314,7 +347,7 @@ class Program{
                     hitPoints = warParams[attakType];                                       // viene aggiunto a "hitPoints" il valore di base del parametro
                 else if(heroObj.cClass == "Thief" && attaks[attakType] == "Archery shot")
                     hitPoints = thiefParams[attakType];
-                else if(heroObj.cClass == "Thief" && attaks[attakType] == "Spell")
+                else if(heroObj.cClass == "Wizard" && attaks[attakType] == "Spell")
                     hitPoints = wizParams[attakType];
                 hitPoints += attakExpense * random.Next(1, heroObj.parameters[4]+1); // calcolo dei punti 2 o 4 * un random tra 1 e il valore del parametro skill
                 heroObj.parameters[attakType] -= attakExpense;
@@ -324,7 +357,7 @@ class Program{
                     hitPoints = warParams[attakType];
                 else if(villainObj.cClass == "Thief" && attaks[attakType] == "Archery shot")
                     hitPoints = thiefParams[attakType];
-                else if(villainObj.cClass == "Thief" && attaks[attakType] == "Spell")
+                else if(villainObj.cClass == "Wizard" && attaks[attakType] == "Spell")
                     hitPoints = wizParams[attakType];
                 hitPoints += attakExpense * random.Next(1, villainObj.parameters[4]+1);
                 villainObj.parameters[attakType] -= attakExpense;
@@ -382,7 +415,7 @@ class Program{
             while(fail){
                 Console.Clear();
                 Console.WriteLine("\nSelect the parameter to recharge: ");
-                for(int i = 0; i<parameters.Length;i++){
+                for(int i = 0; i < parameters.Length;i++){
                     Console.WriteLine($"{i+1} {parameters[i]}");
                 }
                 Console.Write("\nchoice: ");
@@ -405,28 +438,28 @@ class Program{
         }
     }
     static void RechargAssignement([Optional] int sel){
-        int rechValue = rechargeArray[random.Next(rechargeArray.Length)];;
+        int rechargeValue = rechargeArray[random.Next(rechargeArray.Length)];;
         if(sel!=0){
             if(heroObj.cClass == "Warrior"){
-                heroObj.parameters[sel-1] = rechValue <= warParams[sel-1] ? rechValue : warParams[sel-1];
+                heroObj.parameters[sel-1] = rechargeValue <= warParams[sel-1] ? rechargeValue : warParams[sel-1];
             }else if(heroObj.cClass == "Thief"){
-                heroObj.parameters[sel-1] = rechValue <= thiefParams[sel-1] ? rechValue : thiefParams[sel-1];
+                heroObj.parameters[sel-1] = rechargeValue <= thiefParams[sel-1] ? rechargeValue : thiefParams[sel-1];
             }else{
-                heroObj.parameters[sel-1] =  rechValue <= wizParams[sel-1] ? rechValue : wizParams[sel-1];
+                heroObj.parameters[sel-1] =  rechargeValue <= wizParams[sel-1] ? rechargeValue : wizParams[sel-1];
             }
         }else{
             if(villainObj.cClass == "Warrior"){
-                villainObj.parameters[0] = rechValue <= warParams[0] ? rechValue : warParams[0];
+                villainObj.parameters[0] = rechargeValue <= warParams[0] ? rechargeValue : warParams[0];
                 Console.Clear();
                 Console.WriteLine($"\nNow your opponent's {parameters[0]} is {villainObj.parameters[0]}\n\nPlease press any key...");
                 Console.ReadKey();
             }if(heroObj.cClass == "Thief"){
-                villainObj.parameters[1] = rechValue <= thiefParams[1] ? rechValue : thiefParams[1];
+                villainObj.parameters[1] = rechargeValue <= thiefParams[1] ? rechargeValue : thiefParams[1];
                 Console.Clear();
                 Console.WriteLine($"\nNow your opponent's {parameters[1]} is {villainObj.parameters[1]}\n\nPlease press any key...");
                 Console.ReadKey();
             }else{
-                villainObj.parameters[2] = rechValue <= wizParams[2] ? rechValue : wizParams[2];
+                villainObj.parameters[2] = rechargeValue <= wizParams[2] ? rechargeValue : wizParams[2];
                 Console.Clear();
                 Console.WriteLine($"\nNow your opponent's {parameters[2]} is {villainObj.parameters[2]}\n\nPlease press any key...");
                 Console.ReadKey();
@@ -461,11 +494,10 @@ class Program{
                     success = random.Next(101)>70;
                 break;
         }
-        heroleak--;
+        heroLeak--;
         return success;
     }
-    static void SaveHero(){}
-
+    static void LoadHero(){}
     static void SaveMenu(){
         bool success = false;
         while(!success){
@@ -473,14 +505,18 @@ class Program{
             Console.WriteLine($"\nDo you want to save {heroObj.name} the {heroObj.cClass}\n");
             Console.WriteLine($"1 YES!");
             Console.WriteLine($"2 NO!");
-            Console.Write("\nchoice: ");
+            Console.Write("\nChoice: ");
             int.TryParse(Console.ReadLine(), out int selection);
             switch(selection){
                 case 1:
-                    SaveHero();
-                    break;
+                    if(SaveHero()){
+                        Console.Clear();
+                        Console.WriteLine($"\n{heroObj.name} the {heroObj.cClass} saved successfully!\nPlease press any key...");
+                        Console.ReadKey();
+                    }
+                    return;
                 case 2:
-                    break;
+                    return;
                 default:
                     Console.Clear();
                     Console.WriteLine("\nEnter a valid choice!\nPlease press any key...");
@@ -488,5 +524,17 @@ class Program{
                     break;
             }
         }
+    }
+    static bool SaveHero(){
+        heroObj = CharacterSetup(heroObj.cClass, false, heroObj.name);
+        heroObj.parameters[5]++;
+        int tmp = Convert.ToInt32(File.ReadAllText(Path.Combine(CONFIGPATH, "fileName.txt")));
+        string path = Path.Combine(SAVEPATH, tmp + ".json");
+        File.Create(path).Close();
+        using (StreamWriter sw = new StreamWriter(path)){                                          
+            sw.Write(JsonConvert.SerializeObject(heroObj, Formatting.Indented));    
+        }
+        File.WriteAllText(Path.Combine(CONFIGPATH, "fileName.txt"), (tmp+1).ToString());
+        return true;
     }
 }
