@@ -3,8 +3,8 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 
 class Program{
-    const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare
-    const string CONFIGPATH = @".\data\config"; // Path per i files di configurazione                                      
+    const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare ** C:\Users\francesco\Documents\workspace\PersonalProject\data\save
+    const string CONFIGPATH = @".\data\config"; // Path per i files di configurazione ** C:\Users\francesco\Documents\workspace\PersonalProject\data\config                                       
     static readonly string[]  characterClasses = {"Warrior", "Thief", "Wizard"}; // Classi dei personaggi
     static readonly Dictionary<string, int[]> environmentsAndBonus = new Dictionary<string, int[]> {{ "Arena", new int[] {4, 0, 2} },           // Possibili campi di battaglia e bonus per ogni classe
                                                                                                     { "Dark city alley", new int[] {2, 4, 0} }, // ["Arena"]->Warrior  ["Dark city alley"]->Thief  ["Ancient castle"]->Wizard
@@ -497,7 +497,36 @@ class Program{
         heroLeak--;
         return success;
     }
-    static void LoadHero(){}
+    static void LoadHero(){
+        List<string> filesList = new List<string>(Directory.GetFiles(SAVEPATH));
+        if(filesList.Count!=0){
+            Console.Clear();
+            Console.WriteLine("Select the Hero to load by unique ref: \n");
+            foreach(string s in filesList){
+                string json = File.ReadAllText(s);
+                dynamic obj = JsonConvert.DeserializeObject(json);
+                Console.WriteLine($"\n> {obj.parameters[6]} < - Hero's name = {obj.name} class = {obj.cClass} experience = {obj.parameters[5]} skill = {obj.parameters[4]}");
+            }
+            Console.WriteLine("\nchoice: \n");
+            while(true){
+                string path;
+                if(int.TryParse(Console.ReadLine(), out int selection)){
+                    path = Path.Combine(SAVEPATH, selection + ".json");
+                    if(File.Exists(path)){
+                        heroObj = JsonConvert.DeserializeObject(File.ReadAllText(path));
+                        Console.WriteLine($"\n{heroObj.name} the {heroObj.cClass} loaded successfully!!!\nPlease press any key...");
+                        Console.ReadLine();
+                        heroSelected = true;
+                        return;
+                    }else{
+                        Console.WriteLine("Please enter a valid choice: \n");
+                    }
+                }else{
+                    Console.WriteLine("Please enter a valid choice: \n");
+                }
+            }
+        }
+    }
     static void SaveMenu(){
         bool success = false;
         while(!success){
@@ -528,13 +557,12 @@ class Program{
     static bool SaveHero(){
         heroObj = CharacterSetup(heroObj.cClass, false, heroObj.name);
         heroObj.parameters[5]++;
-        int tmp = Convert.ToInt32(File.ReadAllText(Path.Combine(CONFIGPATH, "fileName.txt")));
-        string path = Path.Combine(SAVEPATH, tmp + ".json");
+        string path = Path.Combine(SAVEPATH, heroObj.parameters[6] + ".json");
         File.Create(path).Close();
         using (StreamWriter sw = new StreamWriter(path)){                                          
             sw.Write(JsonConvert.SerializeObject(heroObj, Formatting.Indented));    
         }
-        File.WriteAllText(Path.Combine(CONFIGPATH, "fileName.txt"), (tmp+1).ToString());
+        File.WriteAllText(Path.Combine(CONFIGPATH, "fileName.txt"), (heroObj.parameters[6]+1).ToString());
         return true;
     }
 }

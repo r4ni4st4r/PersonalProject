@@ -1597,12 +1597,12 @@ git commit -m "Iniziato a implementare il salvataggio"
 git push -u origin main
 ```
 
-## Decima versione
+## Decima versione A
 
 -  Implementazione completata di ```static void SaveMenu()``` e ```static void SaveHero()```
 -  Aggiunta la libreria ```Newtonsoft.Json``` per gestire la serializzazione/deserializzazione dei file .json
 -  Impostata la logica del salvataggio che avviene solo se il personaggio vince lo scontro o se riesce a scappare (se sopravvive)
--  Aggiunta la funzionalità che gestisce l'unicità dei nomi dei file di salvataggio tramite un file .txt, il nome del file viene associato al personaggio ```.parameters[6]``` così se muore ed era stato caricato  il file viene eliminato
+-  Aggiunta la funzionalità che gestisce l'unicità dei nomi dei file di salvataggio tramite un file .txt, il nome del file viene associato al personaggio ```.parameters[6]``` così se muore ed era stato caricato il file viene eliminato
 
 ```csharp
 using System.Dynamic;
@@ -2155,3 +2155,46 @@ git commit -m "Menu di salvataggio, salvataggi e nomi univoci dei file implement
 git push -u origin main
 ```
 
+## Decima versione B
+
+-  Implementata la funzionalità "carica personaggio" tramite la funzione ```static void LoadHero()``` che visualizza il valore univoco, il nome, la classe, l'esperienza e la skill dei personaggi salvati e permette di selezionare quello da caricare.
+
+```csharp
+static void LoadHero(){
+        List<string> filesList = new List<string>(Directory.GetFiles(SAVEPATH));
+        if(filesList.Count!=0){
+            Console.Clear();
+            Console.WriteLine("Select the Hero to load by unique ref: \n");
+            foreach(string s in filesList){
+                string json = File.ReadAllText(s);
+                dynamic obj = JsonConvert.DeserializeObject(json);
+                Console.WriteLine($"\n> {obj.parameters[6]} < - Hero's name = {obj.name} class = {obj.cClass} experience = {obj.parameters[5]} skill = {obj.parameters[4]}");
+            }
+            Console.WriteLine("\nchoice: \n");
+            while(true){
+                string path;
+                if(int.TryParse(Console.ReadLine(), out int selection)){
+                    path = Path.Combine(SAVEPATH, selection + ".json");
+                    if(File.Exists(path)){
+                        heroObj = JsonConvert.DeserializeObject(File.ReadAllText(path));
+                        Console.WriteLine($"\n{heroObj.name} the {heroObj.cClass} loaded successfully!!!\nPlease press any key...");
+                        Console.ReadLine();
+                        heroSelected = true;
+                        return;
+                    }else{
+                        Console.WriteLine("Please enter a valid choice: \n");
+                    }
+                }else{
+                    Console.WriteLine("Please enter a valid choice: \n");
+                }
+            }
+        }
+    }
+```
+
+```bash
+git status 
+git add --all
+git commit -m "Implementato il caricamento dei personaggi"
+git push -u origin main
+```
