@@ -1,6 +1,8 @@
 ﻿using System.Dynamic;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
+using System.Data.SQLite;
+using System.Linq.Expressions;
 
 class Program{
     const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare ** C:\Users\francesco\Documents\workspace\PersonalProject\data\save
@@ -61,6 +63,13 @@ class Program{
                     if(!heroSelected)
                         LoadHero();
                     else{
+                        /*
+                        for(int i = 0; i<heroObj.parameters.Count;i++){
+                            Console.WriteLine("heroObj.parameters[i] " + heroObj.parameters[i] + " -----");
+                            bool x = heroObj.parameters[i] > 2;
+                            Console.WriteLine("heroObj.parameters[i] > 2 " + x + " -----");
+                            Console.ReadKey();
+                        }*/
                         Console.Clear();
                         Console.WriteLine("\nYou have already created an hero!\nPlease go on! press any key...\n");
                         Console.ReadKey();
@@ -337,19 +346,24 @@ class Program{
                 villainObj.parameters[attakType] = attakExpense >= villainObj.parameters[attakType] ? 0 : villainObj.parameters[attakType] - attakExpense;
             return 1;
         } 
-        if(turn && attakExpense > heroObj.parameters[attakType]){ // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
+        
+        if(turn && heroObj.parameters[attakType] < attakExpense){           // Il personaggio non ha abbastanza punti parametro per sferrare l'attacco
             return 2;
         }else if(!turn && attakExpense > villainObj.parameters[attakType]){ // Il "nemico" non ha abbastanza punti parametro per sferrare l'attacco
             return 2;
         }else{                                                              // Il colpo va a segno!
             if(turn){
                 if(heroObj.cClass == "Warrior" && attaks[attakType] == "Charged attack")    // Se il colpo è il colpo speciale della classe 
-                    hitPoints = warParams[attakType];                                       // viene aggiunto a "hitPoints" il valore di base del parametro
+                    hitPoints = warParams[attakType];                                       // "hitPoints" parte dal valore di base del parametro
                 else if(heroObj.cClass == "Thief" && attaks[attakType] == "Archery shot")
                     hitPoints = thiefParams[attakType];
                 else if(heroObj.cClass == "Wizard" && attaks[attakType] == "Spell")
                     hitPoints = wizParams[attakType];
-                hitPoints += attakExpense * random.Next(1, heroObj.parameters[4]+1); // calcolo dei punti 2 o 4 * un random tra 1 e il valore del parametro skill
+
+                int tmp = heroObj.parameters[4]+1;    // problema con il load del personaggio ****************  (inutile, ma risolve)
+                
+                hitPoints += attakExpense * random.Next(1, tmp);        // calcolo dei punti 2 o 4 * un random tra 1 e il valore del parametro skill
+
                 heroObj.parameters[attakType] -= attakExpense;
                 villainObj.parameters[3] -= hitPoints;
             }else{
@@ -363,6 +377,7 @@ class Program{
                 villainObj.parameters[attakType] -= attakExpense;
                 heroObj.parameters[3] -= hitPoints;
             }
+            
             return 0;
         }
     }
@@ -505,7 +520,7 @@ class Program{
             foreach(string s in filesList){
                 string json = File.ReadAllText(s);
                 dynamic obj = JsonConvert.DeserializeObject(json);
-                Console.WriteLine($"\n> {obj.parameters[6]} < - Hero's name = {obj.name} class = {obj.cClass} experience = {obj.parameters[5]} skill = {obj.parameters[4]}");
+                Console.WriteLine($"\nRef -> {obj.parameters[6]} < - Hero's name = {obj.name} class = {obj.cClass} experience = {obj.parameters[5]} skill = {obj.parameters[4]}");
             }
             Console.WriteLine("\nchoice: \n");
             while(true){
@@ -517,6 +532,23 @@ class Program{
                         Console.WriteLine($"\n{heroObj.name} the {heroObj.cClass} loaded successfully!!!\nPlease press any key...");
                         Console.ReadLine();
                         heroSelected = true;
+                        
+                        for(int i = 0; i<heroObj.parameters.Count;i++){
+                            heroObj.parameters[i] = Convert.ToInt32(heroObj.parameters[i]);
+                           /* 
+                            Console.WriteLine("heroObj.parameters[i] " + heroObj.parameters[i] + " -----");
+                            bool x = heroObj.parameters[i] > 2;
+                            Console.WriteLine("heroObj.parameters[i] > 2 " + x + " -----");
+                            Console.ReadKey();*/
+                        }
+
+                        /*////////////////debug////////////////////////
+                        for(int i = 0; i<heroObj.parameters.Count;i++){
+                            Console.WriteLine("-----" + heroObj.parameters[i] + "-----");
+                            Console.ReadKey();
+                        }
+                        /////////////////debug///////////////////////*/
+                        
                         return;
                     }else{
                         Console.WriteLine("Please enter a valid choice: \n");
