@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 class Program{
     const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare ** C:\Users\francesco\Documents\workspace\PersonalProject\data\save
     const string CONFIGPATH = @".\data\config"; // Path per i files di configurazione ** C:\Users\francesco\Documents\workspace\PersonalProject\data\config                                       
+    const string DBPATH = @".\data\config\database.db";
     static readonly string[]  characterClasses = {"Warrior", "Thief", "Wizard"}; // Classi dei personaggi
     static readonly Dictionary<string, int[]> environmentsAndBonus = new Dictionary<string, int[]> {{ "Arena", new int[] {4, 0, 2} },           // Possibili campi di battaglia e bonus per ogni classe
                                                                                                     { "Dark city alley", new int[] {2, 4, 0} }, // ["Arena"]->Warrior  ["Dark city alley"]->Thief  ["Ancient castle"]->Wizard
@@ -36,6 +37,37 @@ class Program{
     
     static void Main(string[] args){
         bool mainMenu = true;
+        bool loginMenu = true;
+        if(!CheckDB()){
+            Console.WriteLine("You can't play without a DB... Bye!!!");
+            Console.ReadKey();
+            return;
+        }
+        while(loginMenu){
+            Console.Clear();
+            Console.WriteLine("\n");
+            Console.WriteLine("1 Login");
+            Console.WriteLine("2 Register");
+            Console.WriteLine("3 Exit\n");
+            Console.Write("choice: ");
+            int.TryParse(Console.ReadLine(), out int selection);
+            switch(selection){
+                case 1:
+                    Login();   
+                    break;
+                case 2:
+                    Register();   
+                    break;
+                case 3:
+                    return;
+                default:
+                    Console.Clear();
+                    Console.WriteLine("\nEnter a valid choice!\npress any key...\n");
+                    Console.ReadKey();
+                    break;
+            }
+
+        }
         while(mainMenu){
             Console.Clear();
             Console.WriteLine("\n");
@@ -63,13 +95,6 @@ class Program{
                     if(!heroSelected)
                         LoadHero();
                     else{
-                        /*
-                        for(int i = 0; i<heroObj.parameters.Count;i++){
-                            Console.WriteLine("heroObj.parameters[i] " + heroObj.parameters[i] + " -----");
-                            bool x = heroObj.parameters[i] > 2;
-                            Console.WriteLine("heroObj.parameters[i] > 2 " + x + " -----");
-                            Console.ReadKey();
-                        }*/
                         Console.Clear();
                         Console.WriteLine("\nYou have already created an hero!\nPlease go on! press any key...\n");
                         Console.ReadKey();
@@ -532,23 +557,6 @@ class Program{
                         Console.WriteLine($"\n{heroObj.name} the {heroObj.cClass} loaded successfully!!!\nPlease press any key...");
                         Console.ReadLine();
                         heroSelected = true;
-                        
-                        for(int i = 0; i<heroObj.parameters.Count;i++){
-                            heroObj.parameters[i] = Convert.ToInt32(heroObj.parameters[i]);
-                           /* 
-                            Console.WriteLine("heroObj.parameters[i] " + heroObj.parameters[i] + " -----");
-                            bool x = heroObj.parameters[i] > 2;
-                            Console.WriteLine("heroObj.parameters[i] > 2 " + x + " -----");
-                            Console.ReadKey();*/
-                        }
-
-                        /*////////////////debug////////////////////////
-                        for(int i = 0; i<heroObj.parameters.Count;i++){
-                            Console.WriteLine("-----" + heroObj.parameters[i] + "-----");
-                            Console.ReadKey();
-                        }
-                        /////////////////debug///////////////////////*/
-                        
                         return;
                     }else{
                         Console.WriteLine("Please enter a valid choice: \n");
@@ -597,4 +605,67 @@ class Program{
         File.WriteAllText(Path.Combine(CONFIGPATH, "fileName.txt"), (heroObj.parameters[6]+1).ToString());
         return true;
     }
+    static bool CheckDB(){
+        if (!File.Exists(DBPATH)){
+            while(true){
+                Console.WriteLine("\nNo database was found\nDo you want to create it?\n\ny/n");
+                string selection = Console.ReadLine();
+                switch(selection){
+                case "y":
+                    SQLiteConnection.CreateFile(DBPATH);
+                    SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");
+                    string sql = @"
+                            CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT);
+                            INSERT INTO users (username,password) VALUES ('admin','admin');";
+                    connection.Open();
+                    SQLiteCommand command = new SQLiteCommand(sql, connection); 
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                    Console.Clear();
+                    Console.WriteLine("\nDB successfully created!\nPlease press any key...");
+                    Console.ReadKey();
+                    return true;
+                case "n":
+                    return false;
+                default:
+                    Console.Clear();
+                    Console.WriteLine("\nEnter a valid choice!\nPlease press any key...");
+                    Console.ReadKey();
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+    static void Login(){
+        while(true){
+            Console.Clear();
+            Console.Write("\nPlease enter a username: ");
+            string username = Console.ReadLine();
+            switch(username){
+                case "":
+                    Console.Clear();
+                    Console.Write("\nUsername can't be empty...\nPlease press any key...");
+                    Console.ReadKey();
+                    break;
+                default:
+                    SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");
+                    connection.Open();
+                    string sql = $"SELECT * FROM users WHERE username = '{username}';";
+                    SQLiteCommand command = new SQLiteCommand(sql, connection);
+                    SQLiteDataReader reader = command.ExecuteReader();
+                    if(reader.HasRows){
+                        connection.Close();
+                        Console.WriteLine("L'utente esiste!!!");
+                        Console.ReadKey();
+                    }
+                    
+                break;
+            }
+        }
+    }
+    static void Register(){
+
+    }
+    
 }

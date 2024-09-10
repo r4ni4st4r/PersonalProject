@@ -9,8 +9,9 @@
 - [X] Definizione delle funzionalità di base dello scontro 
 - [X] Implementazione della modalità battaglia giocatore
 - [X] Implementazione della delle mosse della CPU
-- [X] Gestire la persistenza dei dati tramite cartelle, file .json, .csv e .txt
-- [ ] Gestire la persistenza dei dati tramite database SQLite
+- [X] Gestione della persistenza dei dati tramite cartelle, file .json, .csv e .txt
+- [ ] Gestione degli utenti e della sessione attiva
+- [ ] Implementazione degli utenti su SQLite
 - [ ] Gestione degli errori durante l'interazione con il filesystem
 - [ ] Implementazione della modalità rigioca e la possibilità di caricare un personaggio o un avversario
 
