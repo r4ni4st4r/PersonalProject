@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using System.Data.SQLite;
-using System.Linq.Expressions;
+using System.Security;
 
 class Program{
     const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare ** C:\Users\francesco\Documents\workspace\PersonalProject\data\save
@@ -34,6 +34,7 @@ class Program{
     static int hitPoints;
     static int heroLeak;
     static bool saveMenu = false;
+    static int[] session = new int[5]; // session[] -> id  |*|  session[] -> active  |*|  session[] -> win  |*|  session[] -> lose  |*| session[] -> user_id 
     
     static void Main(string[] args){
         bool mainMenu = true;
@@ -615,7 +616,10 @@ class Program{
                     SQLiteConnection.CreateFile(DBPATH);
                     SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");
                     string sql = @"
-                            CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT);
+                            CREATE TABLE sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, active BOOL default TRUE, win INTEGER, lose INTEGER, user_id INTEGER, 
+                                FOREIGN KEY (user_id) REFERENCES users(id)); 
+                            CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT, ranking INTEGER default 0,
+                                last_access DATE default CURRENT_TIMESTAMP); 
                             INSERT INTO users (username,password) VALUES ('admin','admin');";
                     connection.Open();
                     SQLiteCommand command = new SQLiteCommand(sql, connection); 
@@ -649,6 +653,32 @@ class Program{
                     Console.ReadKey();
                     break;
                 default:
+/*
+                using (SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;")){
+                        connection.Open();
+                        string sql = $"SELECT * FROM users WHERE username = '{username}';";
+                        using (SQLiteCommand cmd = new SQLiteCommand(sql, connection))
+                        {
+                            using (SQLiteDataReader reader = cmd.ExecuteReader())
+                            {
+                                if(reader.HasRows){
+                                    while(true){
+                                        Console.Write("\nPlease enter a password: ");
+                                        string psw = GetPassword();
+                                        if(psw.Length == 0 || psw==null){
+                                            Console.Clear();
+                                            Console.Write("\nPassword can't be empty...\nPlease press any key...\n");
+                                            Console.ReadKey();
+                                        }else{
+
+                                        }
+                                        
+                                }
+                            }
+                        }
+                    }
+*/
+                    
                     SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");
                     connection.Open();
                     string sql = $"SELECT * FROM users WHERE username = '{username}';";
@@ -656,16 +686,65 @@ class Program{
                     SQLiteDataReader reader = command.ExecuteReader();
                     if(reader.HasRows){
                         connection.Close();
-                        Console.WriteLine("L'utente esiste!!!");
+                        while(true){
+                            Console.Write("\nPlease enter a password: ");
+                            string psw = GetPassword();
+                            if(psw.Length == 0 || psw==null){
+                                Console.Clear();
+                                Console.Write("\nPassword can't be empty...\nPlease press any key...\n");
+                                Console.ReadKey();
+                            }else{
+                                connection.Open();
+                                sql = $"SELECT id, password FROM users WHERE username = '{username}';";
+                                command = new SQLiteCommand(sql, connection);
+                                reader = command.ExecuteReader();
+                                reader.Read();
+                                if(psw == reader["password"].ToString()){
+                                    int userId = Convert.ToInt32(reader["id"]);
+                                    reader.Close();
+                                    connection.Close();
+                                    Console.WriteLine($"\nWelcome pippo\nPlease press any key...");
+                                    Console.ReadKey();
+                                    connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");
+                                    connection.Open();
+                                    sql = $"INSERT INTO sessions (user_id) VALUES (2)"; 
+                                    command = new SQLiteCommand(sql, connection);
+                                    command.ExecuteNonQuery();
+                                    connection.Close(); 
+                                    Console.WriteLine($"\nSession begin!\nPlease press any key...");
+                                    Console.ReadKey(); 
+                                }
+                            }
+                        }
+                    }else{
+                        connection.Close();
+                        Console.Clear();
+                        Console.Write("\nNo user found...\nPlease press any key...");
                         Console.ReadKey();
                     }
-                    
                 break;
             }
         }
     }
     static void Register(){
-
     }
-    
+
+    static string GetPassword(){
+        string str ="";
+        while (true){
+            ConsoleKeyInfo i = Console.ReadKey(true);
+            if (i.Key == ConsoleKey.Enter){
+                break;
+            } else if (i.Key == ConsoleKey.Backspace){
+                if (str.Length > 0){
+                    str.Remove(str.Length - 1);
+                    Console.Write("\b \b");
+                }
+            }else if (i.KeyChar != '\u0000' ){ // KeyChar == '\u0000' if the key pressed does not correspond to a printable character, e.g. F1, Pause-Break, etc
+                str+=i.KeyChar;
+                Console.Write("*");
+            }
+        }
+        return str;
+    }
 }
