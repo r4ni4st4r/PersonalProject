@@ -653,32 +653,58 @@ class Program{
                     Console.ReadKey();
                     break;
                 default:
-/*
-                using (SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;")){
-                        connection.Open();
-                        string sql = $"SELECT * FROM users WHERE username = '{username}';";
-                        using (SQLiteCommand cmd = new SQLiteCommand(sql, connection))
-                        {
-                            using (SQLiteDataReader reader = cmd.ExecuteReader())
-                            {
-                                if(reader.HasRows){
-                                    while(true){
-                                        Console.Write("\nPlease enter a password: ");
-                                        string psw = GetPassword();
-                                        if(psw.Length == 0 || psw==null){
-                                            Console.Clear();
-                                            Console.Write("\nPassword can't be empty...\nPlease press any key...\n");
-                                            Console.ReadKey();
-                                        }else{
 
-                                        }
-                                        
+                using (SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;")){
+                    connection.Open();
+                    bool hasRow;
+                    bool stringComparison;
+                    int userId;
+                    string sql = $"SELECT * FROM users WHERE username = '{username}';";
+
+                    using (SQLiteCommand cmd = new SQLiteCommand(sql, connection)){
+                        using (SQLiteDataReader reader = cmd.ExecuteReader()){
+                            hasRow = reader.HasRows;
+                        }
+                    }
+
+                    if (hasRow){
+                        while (true){
+                            Console.Write("\nPlease enter a password: ");
+                            string psw = GetPassword();
+                            if (psw.Length == 0 || psw == null)
+                            {
+                                Console.Clear();
+                                Console.Write("\nPassword can't be empty...\nPlease press any key...\n");
+                                Console.ReadKey();
+                            }else{
+                                sql = $"SELECT id, password FROM users WHERE username = '{username}';";
+
+                                using (SQLiteCommand cmd = new SQLiteCommand(sql, connection)){
+                                    using (SQLiteDataReader reader = cmd.ExecuteReader()){
+                                        reader.Read();
+                                        stringComparison = psw == reader["password"].ToString();
+                                        userId = Convert.ToInt32(reader["id"]);
+                                    }
                                 }
+                                if(stringComparison){
+                                    Console.WriteLine($"\nWelcome {username}\nPlease press any key...");
+                                    Console.ReadKey();
+
+                                    sql = $"INSERT INTO sessions (user_id) VALUES (2)";
+                                    using (SQLiteCommand cmd = new SQLiteCommand(sql, connection)){
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                    connection.Close(); 
+                                    Console.WriteLine($"\nSession begin!\nPlease press any key...");
+                                    Console.ReadKey(); 
+                                } 
                             }
                         }
                     }
-*/
-                    
+
+                        
+                }
+/*
                     SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");
                     connection.Open();
                     string sql = $"SELECT * FROM users WHERE username = '{username}';";
@@ -703,7 +729,7 @@ class Program{
                                     int userId = Convert.ToInt32(reader["id"]);
                                     reader.Close();
                                     connection.Close();
-                                    Console.WriteLine($"\nWelcome pippo\nPlease press any key...");
+                                    Console.WriteLine($"\nWelcome {username}\nPlease press any key...");
                                     Console.ReadKey();
                                     connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");
                                     connection.Open();
@@ -721,7 +747,7 @@ class Program{
                         Console.Clear();
                         Console.Write("\nNo user found...\nPlease press any key...");
                         Console.ReadKey();
-                    }
+                    }*/
                 break;
             }
         }
