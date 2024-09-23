@@ -2899,3 +2899,16 @@ git add --all
 git commit -m "Prima embrionale implementazione del sistema di utenti e login tramite DB"
 git push -u origin main
 ```
+
+## Dodicesima Versione
+
+-  Riscrittura completa dell'applicazione a causa dell'integrazione delle classi e l'implementazione del design pattern MVC.
+-  Livello di completamento intorno al 50% ma con valori diversi a seconda delle parti dell'aplicazione, avanzamento non lineare.
+
+```bash
+git status 
+git add --all
+git commit -m "Riscrittura completa di PersonalProject con l'implementazione delle classi e del design pattern MVC"
+git push -u origin main
+```
+

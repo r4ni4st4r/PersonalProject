@@ -69,7 +69,6 @@ public class View{
                     Console.ReadKey();
                     break;
             }
-        
     }*/
 
     public void SaveMenu(Character characterToSave){
@@ -147,6 +146,101 @@ public class View{
         Console.WriteLine("\nYou have already selected an environment!\nPlease go on! Press any key...\n");
         Console.ReadKey();
     }
+    public void FightMessage(string environment, string name, string cClass){
+        Console.Clear();
+        Console.WriteLine($"\nYou are in a/an {environment} against {name} the {cClass}");
+        Console.WriteLine($"\nPlease press any key...");
+        Console.ReadKey();
+    }
+    public void HeroRechargeMessage(){
+        Console.Clear();
+        Console.WriteLine("You need to recharge a parameter of yours!!\nPress any key...\n");
+        Console.ReadKey();
+    }
+    public void VillainRechargeMessage(){
+        Console.WriteLine("\nHe/she hasn't enought points to launch an attack...\nHe/she's going to recharge\nPress any key...");
+        Console.ReadKey();
+    }
+    public void DeathMessage(){
+        Console.Clear();
+            Console.WriteLine($"\nYou LOSE!!! You are DEAD!!!\n");
+            Console.WriteLine("\nPress any key...");
+            Console.ReadKey();
+    }
+    public void WinMessage(){
+        Console.Clear();
+        Console.WriteLine($"\nYou WIN!!! Your opponent is DEAD!!!\n");
+        Console.WriteLine("\nPress any key...");
+        Console.ReadKey();
+    }
+    public void HeroFightMenu(Character hero){
+        Console.Clear();
+        Console.WriteLine($"\nFIGHT {hero.Name} the {hero.Class}!");
+        Console.WriteLine($"\nYour health is {hero.Parameters[3]}!\n");
+        Console.WriteLine($"Your strength is {hero.Parameters[0]}!");
+        Console.WriteLine($"Your stealth is {hero.Parameters[1]}!");
+        Console.WriteLine($"Your magic is {hero.Parameters[2]}!\n");
+        Console.WriteLine($"Your skill is {hero.Parameters[4]}!");
+        Console.WriteLine("\nIT'S YOUR TURN! CONSIDER YOUR PARAMETERS AND MAKE YOUR CHOICE:\n");
+        Console.WriteLine($"1 {DefaultData.Attaks[0]}! ({DefaultData.ParametersString[0]})");
+        Console.WriteLine($"2 {DefaultData.Attaks[1]}! ({DefaultData.ParametersString[1]})");
+        Console.WriteLine($"3 {DefaultData.Attaks[2]}! ({DefaultData.ParametersString[2]})\n");
+        Console.WriteLine($"4 {DefaultData.Attaks[3]}\n");
+        Console.Write("\nchoice: ");
+    }
+    public void AttakResult(int attakResult, bool turn, int attakType, int hitPoints){     // questa funzione stampa il risultato dell'attacco
+        switch(attakResult){                                                // prendendo come parametri anche il turno (noi o la cpu) 
+            case 0:                                                         // e il tipo di attacco
+                Console.Clear();
+                if(turn)
+                    Console.WriteLine($"\nYour {DefaultData.Attaks[attakType]} had success! You hit your opponent with {hitPoints} of damage!\n\nPress any key...");
+                else
+                    Console.WriteLine($"\nYour opponent {DefaultData.Attaks[attakType]} had success! You were hit with {hitPoints} of damage!\n\nPress any key...");
+                Console.ReadKey();
+                break;
+            case 1:
+                Console.Clear();
+                if(turn)
+                    Console.WriteLine($"\nYour {DefaultData.Attaks[attakType]} miss your opponent!\n\nPress any key...");
+                else
+                    Console.WriteLine($"\nYour opponent {DefaultData.Attaks[attakType]} miss you! You are lucky!!!\n\nPress any key...");
+                Console.ReadKey(); 
+                break;
+            case 2:
+                Console.Clear();
+                if(turn)
+                    Console.WriteLine($"\nYou haven't enough points for a/an {DefaultData.Attaks[attakType]}!\n\nPress any key...");
+                else
+                    Console.WriteLine($"\nYour opponent hasn't enough points for a/an {DefaultData.Attaks[attakType]}!\n\nPress any key...");
+                Console.ReadKey();
+                break;    
+        }
+    }
+    public void TryToRunAway(bool success, int heroPossibilities){
+        if(heroPossibilities > 0){
+            if(success){
+                Console.Clear();
+                Console.WriteLine("\nYou ran away!!!\nPlease press any key...");
+                Console.ReadKey();
+            }else{
+                Console.Clear();
+                Console.WriteLine("\nYou fail to run away!!!\nYou miss your turn\nPlease press any key...");
+                Console.ReadKey();
+            }
+        }else{
+            Console.Clear();
+            Console.WriteLine("\nYou haven't any possibilities to run away!!!\nPlease press any key...");
+            Console.ReadKey();
+        }
+    }
+    public void VillainAttak(Character villain){
+        Console.Clear();
+        Console.WriteLine($"Your opposite health is {villain.Parameters[3]}!");
+        Console.WriteLine("\nIT'S YOUR OPPOSITE TURN!\n");
+        Console.WriteLine("He/she's going to do something...\nPress any key...");
+        Console.ReadKey();
+    }
+
     public int GetIntInput(){
         if(int.TryParse(Console.ReadLine(), out int input))
             return input;
