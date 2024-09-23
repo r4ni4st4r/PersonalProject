@@ -1,0 +1,10 @@
+{
+  "location": [
+    "Arena",
+    "Dark city alley",
+    "Ancient castle"
+  ],
+  "arenaBonus": [4,0,2],
+  "darkCityAlleyBonus": [2,4,0],
+  "ancientCastleBonus": [0,2,4]
+}
