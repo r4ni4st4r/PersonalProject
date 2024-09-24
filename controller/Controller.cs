@@ -1,35 +1,43 @@
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 public class Controller{
     static public bool HeroSelected{get;set;}
     static public bool EnvironmentSelected{get;set;}
-    public bool MainMenuWhile{get;set;}
-    public bool LoginMenuWhile{get;set;}
-    public Character Hero{get{return _hero;}}
-    public Character Villain{get{return _villain;}}
     private int _intInput;
     private Random _random = new Random();
     private Character _hero;
+    private DataController _dataController;
+    private Environment _environment;
     private Character _villain;
     private Database _db;
     private View _view;
+    private User _currentUser;
     private List<Environment> _environments = new List<Environment>();
     private int _selectedEnvironment;
+    public Character Hero{get{return _hero;}}
+    public Character Villain{get{return _villain;}}
+    public Environment Environment{get{return _environment;}}
+    public bool MainMenuWhile{get;set;}
+    public bool LoginMenuWhile{get;set;}
 
-    public Controller(Database db, View view){
+    public Controller(Database db, View view, DataController dataController){
         _db = db;
         _view = view;
+        _dataController = dataController;
     }
     public void LoginMenu(){
+        LoginMenuWhile = true;
         while(LoginMenuWhile){
             _view.LoginMenu();
             _intInput = _view.GetIntInput();
             switch(_intInput){
                 case 1:
-                    Login();
+                    _currentUser = _db.Login();
+                    LoginMenuWhile = false;
                     break;
                 case 2:
-                    CreateUser();   
+                    CreateUser();
                     break;
                 case 3:
                     DeleteUser();
@@ -42,6 +50,7 @@ public class Controller{
         MainMenu();
     }
     public void MainMenu(){
+        MainMenuWhile = true;
         while(MainMenuWhile){
             _view.MainMenu();
             _intInput = _view.GetIntInput();
@@ -80,56 +89,128 @@ public class Controller{
             }
         }
     }
-    private void Login(){}
-    private void CreateUser(){}
-    private void DeleteUser(){}
-    private void CreateNewHero(){}
-    private void LoadHero(){}
+    private void CreateUser(){
+        _view.NotImplementedYet();
+    }
+    private void DeleteUser(){
+        _view.NotImplementedYet();
+    }
+    private void LoadHero(){
+        _view.NotImplementedYet();
+    }
     private void AssignBonus(){}
-    private void SelectEnvirment(){}
     private void RechargeParameter(bool heroOrVillain){}
-    /*
-    Character CharacterSetup(string cClass, bool newHero,  [Optional] string name){  // Funzione che assegna i valori ai parametri del personaggio in base alla classe
-        Character character = new Character();                                      // e ritorna il personaggio (eroe o avversario)
-        character.Parameters = new int[7];
-        if(name != null){
-            charObj.name = name;
-            heroSelected = true; 
-        }else
-            charObj.name = villainNames[random.Next(villainNames.Length)] + " the " + cClass;
-        charObj.cClass = cClass;
+    private void SelectEnvirment(){ //**********************************************//
+        bool fail = true;
+        while(fail){
+            _view.SelectEnvirmentMenu();
+            switch(_view.GetIntInput()){
+                case 1:
+                    _environment = new Environment("Arena", DefaultData.WarBonus);
+                    _villain = CharacterSetup("Warrior", true, true);
+                    fail = false;
+                    break;
+                case 2:
+                    _environment = new Environment("Dark city alley", DefaultData.ThiefBonus);
+                    _villain = CharacterSetup("Thief", true, true);
+                    fail = false;
+                    break;
+                case 3:
+                    _environment = new Environment("Ancient castle", DefaultData.WizBonus);
+                    _villain = CharacterSetup("Wizard", true, true);
+                    fail = false;
+                    break;
+                default:
+                    _view.InvalidChoice();
+                    break;
+            }
+        }
+        EnvironmentSelected = true;
+    }
+    private void CreateNewHero(){ // Funzione per selezionare il nome e la classe di un nuovo personaggio
+        string name = "";
+        bool failDo = true;
+        bool failWhile = true;
+        int selection;
+        do{
+            while(failWhile){
+                _view.EnterHeroNeme();
+                name = _view.GetStringInput();
+                if(name != ""){
+                    failWhile = false;
+                }else{
+                    _view.NotValidName();
+                }
+            }
+            _view.ClassesSelectionMenu();
+            selection = _view.GetIntInput();
+            switch(selection){
+                case 1:
+                case 2:
+                case 3:
+                    CharacterSetup(DefaultData.CharacterClasses[selection - 1], true, false,name);
+                    failDo = false;
+                    break;
+                default:
+                    _view.InvalidChoice();
+                    break;
+            }
+        }while(failDo);
+    }
+    private Character CharacterSetup(string cClass, bool newHero, bool villain, [Optional] string name){
+        Character character;
+        if(villain)
+            character = new Character(DefaultData.VillainNames[_random.Next(DefaultData.VillainNames.Length)], cClass);
+        else
+            character = new Character(name, cClass);
         switch(cClass){
             case "Warrior":
-                charObj.parameters[0] = warParams[0];       // parametro[0] = strength 
-                charObj.parameters[1] = warParams[1];       // parametro[1] = stealth 
-                charObj.parameters[2] = warParams[2];       // parametro[2] = magic 
-                charObj.parameters[3] = warParams[3] * 10;  // parametro[3] = health
+                character.Parameters[0] = DefaultData.WarParams[0];       // parametro[0] = strength 
+                character.Parameters[1] = DefaultData.WarParams[1];       // parametro[1] = stealth 
+                character.Parameters[2] = DefaultData.WarParams[2];       // parametro[2] = magic 
+                character.Parameters[3] = DefaultData.WarParams[3] * 10;  // parametro[3] = health
                 break;
             case "Thief":
-                charObj.parameters[0] = thiefParams[0];
-                charObj.parameters[1] = thiefParams[1];
-                charObj.parameters[2] = thiefParams[2];
-                charObj.parameters[3] = thiefParams[3] * 10;
+                character.Parameters[0] = DefaultData.ThiefParams[0];
+                character.Parameters[1] = DefaultData.ThiefParams[1];
+                character.Parameters[2] = DefaultData.ThiefParams[2];
+                character.Parameters[3] = DefaultData.ThiefParams[3] * 10;
                 break;
             case "Wizard":
-                charObj.parameters[0] = wizParams[0];
-                charObj.parameters[1] = wizParams[1];
-                charObj.parameters[2] = wizParams[2];
-                charObj.parameters[3] = wizParams[3] * 10;
+                character.Parameters[0] = DefaultData.WizParams[0];
+                character.Parameters[1] = DefaultData.WizParams[1];
+                character.Parameters[2] = DefaultData.WizParams[2];
+                character.Parameters[3] = DefaultData.WizParams[3] * 10;
                 break;
         }
         if(newHero){
-            charObj.parameters[5] = 0;                                                                              // parameters[5] = experience verrà utilizzato con la persistenza dei dati
-            charObj.parameters[4] = skillValues[random.Next(skillValues.Length-1)];                                 // parameters[4] = skill
-            charObj.parameters[6] = Convert.ToInt32(File.ReadAllText(Path.Combine(CONFIGPATH, "fileName.txt")));    // parameters[6] = file name
+            character.Parameters[5] = 0;                                                                              // parameters[5] = experience verrà utilizzato con la persistenza dei dati
+            character.Parameters[4] = DefaultData.SkillValues[_random.Next(DefaultData.SkillValues.Length-1)];                                 // parameters[4] = skill
         }else{
-            charObj.parameters[5] = heroObj.parameters[5];
-            charObj.parameters[4] = heroObj.parameters[4];
-            charObj.parameters[6] = heroObj.parameters[6];
-            heroSelected = true;
+            //Da implementare quando è un personaggio loadato
+
+            /*charObj.parameters[4] = heroObj.parameters[4];
+            character.Parameters[5] = heroObj.parameters[5];*/
+            HeroSelected = true;
+
         }
-        return charObj;
-    }*/
+        return character;
+    }
+    private bool SaveMenu(){
+        while(true){
+            _view.SaveMenu(Hero.Name, Hero.Class);
+            _intInput = _view.GetIntInput();
+            switch(_intInput){
+                case 1:
+                    return _dataController.WriteOnJson(Hero);
+                case 2:
+                    return false;
+                default:
+                    _view.InvalidChoice();
+                    break;
+            }
+        }
+    }
     private int CpuActionIa(){
         int maxIndex = 0;
         for(int i = 0; i < 3; i++){
@@ -192,7 +273,9 @@ public class Controller{
                                 success= TryToRunAway();
                                 if(success){
                                     ranAway = true;
-                                    saveMenu = true;
+                                    //*******************************************************
+                                    //saveMenu = true;
+                                    //*******************************************************
                                     break;
                                 }else{
                                     yourTurn = false;
@@ -220,7 +303,11 @@ public class Controller{
         if(_hero.Parameters[3] <= 0){
             _view.DeathMessage();
         }else if(!ranAway){
-            saveMenu = true;
+
+            //*******************************************************
+            //saveMenu = true;
+            //*******************************************************
+            
             _view.WinMessage();
         }
     }

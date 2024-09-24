@@ -447,7 +447,7 @@ class ProgramOld{
                     Console.WriteLine($"\nYour opponent hasn't enough points for a/an {attaks[attakType]}!\n\nPress any key...");
                 Console.ReadKey();
                 break;    
-            }
+        }
     }
     static void RechargeParameter(bool turn){   // Il giocatore può scegliere che parametro ricaricare ma solo quando tutti e 3 saranno a 0
         bool fail = true;                       // La CPU ricarica il parametro dominante della classe e solo quando ha tutti i parametri a 0
@@ -665,6 +665,7 @@ class ProgramOld{
                             hasRow = reader.HasRows;
                         }
                     }
+                    
                     if (hasRow){
                         while (true){
                             Console.Write("\nPlease enter a password: ");
@@ -698,9 +699,7 @@ class ProgramOld{
                                 } 
                             }
                         }
-                    }
-
-                        
+                    }       
                 }
 /*
                     SQLiteConnection connection = new SQLiteConnection($"Data Source={DBPATH};version=3;");

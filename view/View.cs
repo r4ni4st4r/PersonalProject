@@ -1,8 +1,6 @@
 public class View{
-
     public View(){
     }
-
     public void LoginMenu(){
         Console.Clear();
         Console.WriteLine("\n");
@@ -25,78 +23,27 @@ public class View{
         Console.WriteLine("5 Exit\n");
         Console.Write("choice: ");
     }
-        /*  
-            if(int.TryParse(Console.ReadLine(), out int selection))
-                selection = -1;
-            switch(selection){
-                case 1:
-                    if(!HeroSelected)
-                        CreateNewHero();
-                    else{
-                        
-                    }
-                    break;
-                case 2:
-                    if(!HeroSelected)
-                        LoadHero();
-                    else{
-                        Console.Clear();
-                        Console.WriteLine("\nYou have already created an hero!\nPlease go on! press any key...\n");
-                        Console.ReadKey();
-                    }
-                    break;
-                case 3:
-                    if(!EnvironmentSelected)
-                        SelectEnvirment();
-                    else{
-                        Console.Clear();
-                        Console.WriteLine("\nYou have already selected an environment!\nPlease go on! press any key...\n");
-                        Console.ReadKey();
-                    }
-                    break;
-                case 4:
-                    if(EnvironmentSelected && HeroSelected){
-                        heroLeak = 2;
-                        Fight();
-                        MainMenuWhile = false;
-                        break;
-                    }else {}
-                case 5:
-                    return;
-                default:
-                    Console.Clear();
-                    Console.WriteLine("\nEnter a valid choice!\npress any key...\n");
-                    Console.ReadKey();
-                    break;
-            }
-    }*/
-
-    public void SaveMenu(Character characterToSave){
-        bool success = false;
-        while(!success){
+    public void SaveMenu(string name, string cClass){
             Console.Clear();
-            Console.WriteLine($"\nDo you want to save {characterToSave.Name} the {characterToSave.Class}\n");
+            Console.WriteLine($"\nDo you want to save {name} the {cClass}\n");
             Console.WriteLine($"1 YES!");
             Console.WriteLine($"2 NO!");
             Console.Write("\nChoice: ");
-            int.TryParse(Console.ReadLine(), out int selection);
-            switch(selection){
-                case 1:
-                    if(SaveHero()){
-                        Console.Clear();
-                        Console.WriteLine($"\n{characterToSave.Name} the {characterToSave.Class} saved successfully!\nPlease press any key...");
-                        Console.ReadKey();
-                    }
-                    return;
-                case 2:
-                    return;
-                default:
-                    Console.Clear();
-                    Console.WriteLine("\nEnter a valid choice!\nPlease press any key...");
-                    Console.ReadKey();
-                    break;
-            }
+    }
+    public void Saved(string name, string cClass){
+        Console.Clear();
+        Console.WriteLine($"\n{name} the {cClass} saved successfully!\nPlease press any key...");
+        Console.ReadKey();
+    }
+    public void SelectEnvirmentMenu(){
+        Console.Clear();
+        Console.WriteLine("Select the enviroment for the battle: ");
+        int i = 1;
+        foreach(var ky in DefaultData.Environments){
+            Console.WriteLine($"{i} {ky}");
+            i++;
         }
+        Console.Write("choice: ");
     }
     public string GetPassword(){
         string str ="";
@@ -131,10 +78,46 @@ public class View{
             Console.ReadKey();
         }
     }
+    public void UsernameEmptyError(){
+        Console.Clear();
+        Console.Write("\nUsername can't be empty...\nPlease press any key...");
+        Console.ReadKey();
+    }
+    public void EnterUsername(){
+        Console.Clear();
+        Console.Write("\nPlease enter a username: ");
+    }
+
+    public void EnterPassword(){
+        Console.Write("\nPlease enter a password: ");
+    }
+    public void PasswordEmptyError(){
+        Console.Clear();
+        Console.Write("\nPassword can't be empty...\nPlease press any key...\n");
+        Console.ReadKey();
+    }
+    public void EnterHeroNeme(){
+        Console.Clear();
+        Console.Write("Please enter your hero's name: ");
+    }
+    public void SessionStarted(string username){
+        Console.WriteLine($"\nWelcome {username}\nPlease press any key...");
+        Console.ReadKey();
+        Console.WriteLine($"\nSession begin!\nPlease press any key...");
+        Console.ReadKey(); 
+    }
+    public void NotValidName(){
+        Console.Clear();
+        Console.WriteLine("\nEnter a valid name!\nPlease enter a key...");
+        Console.ReadKey();
+    }
     public void InvalidChoice(){
         Console.Clear();
         Console.WriteLine("\nEnter a valid choice!\nPress any key...\n");
         Console.ReadKey();
+    }
+    public void NotImplementedYet(){
+        Console.WriteLine("Not implemented yet");
     }
     public void HeroAlreadyCreated(){
         Console.Clear();
@@ -160,6 +143,14 @@ public class View{
     public void VillainRechargeMessage(){
         Console.WriteLine("\nHe/she hasn't enought points to launch an attack...\nHe/she's going to recharge\nPress any key...");
         Console.ReadKey();
+    }
+    public void ClassesSelectionMenu(){
+        Console.Clear();
+        Console.WriteLine("\nSelect character's class:\n");
+        for(int i = 0; i < DefaultData.CharacterClasses.Length; i++){
+            Console.WriteLine($"{i+1} {DefaultData.CharacterClasses[i]}");
+        }
+        Console.Write("\nchoice: ");
     }
     public void DeathMessage(){
         Console.Clear();
@@ -188,14 +179,14 @@ public class View{
         Console.WriteLine($"4 {DefaultData.Attaks[3]}\n");
         Console.Write("\nchoice: ");
     }
-    public void AttakResult(int attakResult, bool turn, int attakType, int hitPoints){     // questa funzione stampa il risultato dell'attacco
+    public void AttakResult(int attakResult, bool turn, int attakType){     // questa funzione stampa il risultato dell'attacco
         switch(attakResult){                                                // prendendo come parametri anche il turno (noi o la cpu) 
             case 0:                                                         // e il tipo di attacco
                 Console.Clear();
                 if(turn)
-                    Console.WriteLine($"\nYour {DefaultData.Attaks[attakType]} had success! You hit your opponent with {hitPoints} of damage!\n\nPress any key...");
+                    Console.WriteLine($"\nYour {DefaultData.Attaks[attakType]} had success! You hit your opponent with {DefaultData.HitPoints} of damage!\n\nPress any key...");
                 else
-                    Console.WriteLine($"\nYour opponent {DefaultData.Attaks[attakType]} had success! You were hit with {hitPoints} of damage!\n\nPress any key...");
+                    Console.WriteLine($"\nYour opponent {DefaultData.Attaks[attakType]} had success! You were hit with {DefaultData.HitPoints} of damage!\n\nPress any key...");
                 Console.ReadKey();
                 break;
             case 1:
@@ -240,7 +231,6 @@ public class View{
         Console.WriteLine("He/she's going to do something...\nPress any key...");
         Console.ReadKey();
     }
-
     public int GetIntInput(){
         if(int.TryParse(Console.ReadLine(), out int input))
             return input;

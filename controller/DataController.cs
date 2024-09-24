@@ -1,17 +1,28 @@
 using System.Dynamic;
 using Newtonsoft.Json;
 public class DataController{
-    private readonly string _path;
-    public string Path{get;}
-    public DataController(string path){
-        _path = path;
-    }
     public ExpandoObject ReadJson(){
         return new ExpandoObject();
     }
     public List<string> ReadCsv(){
         return new List<string>();
     }
+    public bool WriteOnJson(Character hero){
+        string path = Path.Combine(DefaultData.SAVEPATH, hero.Name + Character.FileName + ".json");
+        File.Create(path).Close();
+        using (StreamWriter sw = new StreamWriter(path)){                                          
+            sw.Write(JsonConvert.SerializeObject(hero, Formatting.Indented));    
+        }
+        return true;
+    }
+    public void WriteOnTxt(){
+        File.WriteAllText(Path.Combine(DefaultData.CONFIGPATH, "fileName.txt"), (++Character.FileName).ToString());
+    }
+
+    static public void ReadByTxt(){
+        Character.FileName = Convert.ToInt32(File.ReadAllText(Path.Combine(DefaultData.CONFIGPATH, "fileName.txt")));
+    }
+
     /*
         static void LoadHero(){
         List<string> filesList = new List<string>(Directory.GetFiles(SAVEPATH));
