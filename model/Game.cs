@@ -1,3 +1,6 @@
+/// <summary>
+/// Semplice classe Game che rispecchia un elemento della tabella games del database
+/// </summary>
 public class Game{
     private int _id;
     private int _userId;

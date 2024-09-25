@@ -1,32 +1,32 @@
 # Gioco di ruolo basato su combattimenti tra personaggi
 
-## Definizione delle funzionalità di base:
+## Definizione delle funzionalità di base
 
-- [X] Definizione delle caratteristiche di base e delle classi dei personaggi
-- [X] Creazione dell'eroe in base alla scelta del giocatore
-- [X] Definizione dei primi campi di battaglia
+- [x] Definizione delle caratteristiche di base e delle classi dei personaggi
+- [x] Creazione dell'eroe in base alla scelta del giocatore
+- [x] Definizione dei primi campi di battaglia
 - [X] Selezione del campo di battaglia e assegnazione dell'avversario
-- [X] Definizione delle funzionalità di base dello scontro 
+- [X] Definizione delle funzionalità di base dello scontro
 - [X] Implementazione della modalità battaglia giocatore
 - [X] Implementazione della delle mosse della CPU
 - [X] Gestione della persistenza dei dati tramite cartelle, file .json, .csv e .txt
 - [X] Definizione della struttura del database SQLite
-- [ ] Gestione degli utenti e della sessione attiva
-- [ ] Implementazione degli utenti su SQLite
+- [X] Gestione degli utenti e della sessione attiva
+- [X] Implementazione degli utenti su SQLite
 - [ ] Implementazione deglla configurazione tramite .json
 - [ ] Gestione degli errori durante l'interazione con il filesystem
 - [ ] Implementazione della modalità rigioca e la possibilità di caricare un personaggio o un avversario
 
-## TODO list:
+## TODO list
 
 - [ ] Implementare la funzionalità parata
 - [ ] Implementare la funzionalità cura
 
-## Prima versione
+# Prima versione
 
--  Creata la prima struttura dell'applicazione e impostazione delle funzionalità minime
--  visualizzazione delle possibilità del giocatore tramite un menu testuale
--  Nessuna funzionalità è ancora implementata
+- Creata la prima struttura dell'applicazione e impostazione delle funzionalità minime
+- visualizzazione delle possibilità del giocatore tramite un menu testuale
+- Nessuna funzionalità è ancora implementata
 
 ```csharp
 class Program{
@@ -77,11 +77,11 @@ git push -u origin main
 
 # Seconda versione
 
--  Gli attributi dei giocatori sono sono ```health, strength, stealth, magic ed experience```. Ogni classe avrà 36 punti suddivisi tra le varie skills (Il valore di health sarà moltiplicato per 10). Experience partirà da 0 e verrà incrementata quando sarà implementata la persistenza dei dati e il salvataggio dei personaggi
--  Il personaggio ```Warrior``` avrà questi valori ```health=16 strength=16 stealth=0 magic=4``` e questi due attacchi firstAttak >> charged attack (attribute strength) seconAttak >> spell (attribute magic)
--  Il personaggio ```Thief``` avrà questi valori ```health=12 strength=8 stealth=16 magic=0``` e questi due attacchi firstAttak >> archery (attribute stealth) secondAttak >> charged attack (attribute strength)
--  Il personaggio ```Wizard``` avrà questi valori ```health=8 strength=0 stealth=8 magic=20``` e questi due attacchi firstAttak >> spell (attribute magic) secondAttak >> archery (attribute stealth)
--  Abbozzata la creazione del personaggio
+- Gli attributi dei giocatori sono sono ```health, strength, stealth, magic ed experience```. Ogni classe avrà 36 punti suddivisi tra le varie skills (Il valore di health sarà moltiplicato per 10). Experience partirà da 0 e verrà incrementata quando sarà implementata la persistenza dei dati e il salvataggio dei personaggi
+- Il personaggio ```Warrior``` avrà questi valori ```health=16 strength=16 stealth=0 magic=4``` e questi due attacchi firstAttak >> charged attack (attribute strength) seconAttak >> spell (attribute magic)
+- Il personaggio ```Thief``` avrà questi valori ```health=12 strength=8 stealth=16 magic=0``` e questi due attacchi firstAttak >> archery (attribute stealth) secondAttak >> charged attack (attribute strength)
+- Il personaggio ```Wizard``` avrà questi valori ```health=8 strength=0 stealth=8 magic=20``` e questi due attacchi firstAttak >> spell (attribute magic) secondAttak >> archery (attribute stealth)
+- Abbozzata la creazione del personaggio
 
 ```csharp
 using System.Runtime.CompilerServices;
@@ -168,7 +168,7 @@ git push -u origin main
 
 # Terza versione
 
--  Completata la creazione del personaggio con le funzioni ```void CreateNewHero()``` e ```void NewHeroSetup(string cClass)```
+- Completata la creazione del personaggio con le funzioni ```void CreateNewHero()``` e ```void NewHeroSetup(string cClass)```
 
 ```csharp
     static private void CreateNewHero(){
@@ -247,9 +247,9 @@ git push -u origin main
 
 # Quarta versione A
 
--  Implementata la funzionalità  ```Environment Selection``` con la funzione ```void SelectEnvirment()```. Permette al giocatore di scegliere tra tre campi di battaglia e crea l'avversario residente corrispondente
--  Utilizzato un ```Dictionary<string, int[]>``` - ```envirormentsAndBonus``` che correla il campo di battaglia con i bonus alle classi (I bonus vengono assegnati a entrambi i personaggi, ma queelo con il beneficio maggiore è il resident dell'envirorment)
--  Modificata la funzione ```NewCharacterSetup``` per creare un eroe o un avversario
+- Implementata la funzionalità  ```Environment Selection``` con la funzione ```void SelectEnvirment()```. Permette al giocatore di scegliere tra tre campi di battaglia e crea l'avversario residente corrispondente
+- Utilizzato un ```Dictionary<string, int[]>``` - ```envirormentsAndBonus``` che correla il campo di battaglia con i bonus alle classi (I bonus vengono assegnati a entrambi i personaggi, ma queelo con il beneficio maggiore è il resident dell'envirorment)
+- Modificata la funzione ```NewCharacterSetup``` per creare un eroe o un avversario
 
 ```csharp
 using System.Dynamic;
@@ -434,7 +434,7 @@ git push -u origin main
 
 # Quarta versione B
 
--  Semplicemente corretto il menu in modo che non visualizzi un opzione se già completata
+- Semplicemente corretto il menu in modo che non visualizzi un opzione se già completata
 
 ```csharp
 if(!heroCreated)
@@ -457,8 +457,8 @@ git push -u origin main
 
 # Quinta versione A
 
--  Iniziato a definire a livello logico il funzionamento della battaglia
--  Aggiunta versione estremamente embrionale della funzione ```void Fight()```.
+- Iniziato a definire a livello logico il funzionamento della battaglia
+- Aggiunta versione estremamente embrionale della funzione ```void Fight()```.
 
 ```csharp
 static void Fight(){
@@ -491,9 +491,9 @@ git push -u origin main
 
 # Quinta versione B
 
--  Rivisto l'ordine dei parametri dei giocatori negli array di configurazione affinchè gli indici siano coerenti 
--  Secondo step della definizione a livello logico del funzionamento della battaglia. Tramite il prosieguo dell'implementazione della funzione ```Fight()``` e l'armonizzazione delle variabili con la logica stessa
--  Ai personaggi vengono aumentati i parametri con il bonus campo di battaglia attraverso la funzione ```AssignBonus()```
+- Rivisto l'ordine dei parametri dei giocatori negli array di configurazione affinchè gli indici siano coerenti
+- Secondo step della definizione a livello logico del funzionamento della battaglia. Tramite il prosieguo dell'implementazione della funzione ```Fight()``` e l'armonizzazione delle variabili con la logica stessa
+- Ai personaggi vengono aumentati i parametri con il bonus campo di battaglia attraverso la funzione ```AssignBonus()```
 
 ```csharp
 using System.Dynamic;
@@ -751,13 +751,13 @@ git commit -m "Armonizzazione del codice alla luce dell'evoluzione della logica 
 git push -u origin main
 ```
 
-## Sesta versione
+# Sesta versione
 
--  I parametri dei personaggi ora sono un array di 4 interi, hanno lo stesso indice degli attacchi corrispondenti
--  Tutto più generico
--  Continua l'implementazione delle funzioni ```void Fight()``` e ```int Attak(int attakType, bool turn)```, ora in grado di mettere in atto gli attacchi del giocatore
--  Manca ancora la funzione di ricarica dei parametri esauriti (al costo di un turno)
--  Manca ancora completamente l'intelligenza artificiale
+- I parametri dei personaggi ora sono un array di 4 interi, hanno lo stesso indice degli attacchi corrispondenti
+- Tutto più generico
+- Continua l'implementazione delle funzioni ```void Fight()``` e ```int Attak(int attakType, bool turn)```, ora in grado di mettere in atto gli attacchi del giocatore
+- Manca ancora la funzione di ricarica dei parametri esauriti (al costo di un turno)
+- Manca ancora completamente l'intelligenza artificiale
 
 ```csharp
 using System.Dynamic;
@@ -1040,6 +1040,8 @@ class Program{
 }
 ```
 
+## Comandi versionamento
+
 ```bash
 git status 
 git add --all
@@ -1047,12 +1049,12 @@ git commit -m "Prima versione con un embrionale combattimento funzionante (solo 
 git push -u origin main
 ```
 
-## Settima versione
+# Settima versione
 
--  Aggiunto un elemento all'array dei parametri "experience" ```parameters[0] = strength```, ```parameters[1] = stealth```, ```parameters[2] = magic```, ```parameters[3] = health``` e ```parameters[4] = experience```
--  Aggiunta la funzione ```void AttakResult(int attakResult, bool turn, int attakType)``` che stampa l'esito dell'attacco sia per il giocateore che per la CPU
--  Implementata la scelta della mossa da parte della CPU con la funzione ```int CpuActionIa()``` che per adesso sceglie il colpo con il parametro più alto. Se tutti i parametri sono a 0 ricarica il principale del personaggio. (Funzione ```void RechargeParameter()``` non ancora implementata)
--  Completati i commenti
+- Aggiunto un elemento all'array dei parametri "experience" ```parameters[0] = strength```, ```parameters[1] = stealth```, ```parameters[2] = magic```, ```parameters[3] = health``` e ```parameters[4] = experience```
+- Aggiunta la funzione ```void AttakResult(int attakResult, bool turn, int attakType)``` che stampa l'esito dell'attacco sia per il giocateore che per la CPU
+- Implementata la scelta della mossa da parte della CPU con la funzione ```int CpuActionIa()``` che per adesso sceglie il colpo con il parametro più alto. Se tutti i parametri sono a 0 ricarica il principale del personaggio. (Funzione ```void RechargeParameter()``` non ancora implementata)
+- Completati i commenti
 
 ```csharp
 using System.Dynamic;
@@ -1372,6 +1374,8 @@ class Program{
 }
 ```
 
+## Comandi versionamento
+
 ```bash
 git status 
 git add --all
@@ -1379,11 +1383,11 @@ git commit -m "Completato lo scontro e le scelte della CPU (semplificate)"
 git push -u origin main
 ```
 
-## Ottava versione A
+# Ottava versione A
 
--  Quando tutti i parametri del giocatore o della CPU sono a 0 è stata implementata la funzione di ricarica di un parametro
--  Il valore minimo ricaricato sarà di 4 e il massimo sarà il massimo valore del parametro per quella classe
--  Queste funzionalità sono state implementate con le funzioni ```void RechargeParameter(bool turn)``` e ```void RechargAssignement([Optional] int sel)```
+- Quando tutti i parametri del giocatore o della CPU sono a 0 è stata implementata la funzione di ricarica di un parametro
+- Il valore minimo ricaricato sarà di 4 e il massimo sarà il massimo valore del parametro per quella classe
+- Queste funzionalità sono state implementate con le funzioni ```void RechargeParameter(bool turn)``` e ```void RechargAssignement([Optional] int sel)```
 
 ```csharp
     static void RechargeParameter(bool turn){   // Il giocatore può scegliere che parametro ricaricare ma solo quando tutti e 3 saranno a 0
@@ -1455,6 +1459,8 @@ git push -u origin main
     }
 ```
 
+## Comandi versionamento
+
 ```bash
 git status 
 git add --all
@@ -1462,11 +1468,11 @@ git commit -m "Implementata la ricarica di un parametro per giocatore e CPU"
 git push -u origin main
 ```
 
-## Ottava versione B
+# Ottava versione B
 
--  Inserito il parametro ```Skill``` assegnato in fase di creazione del personaggio (che in futuro interagirà con experience). Questo parametro è determinante per calcolare con quanti punti colpisce il giocatore nell'attacco
--  Modifica della funzione ```void RechargAssignement([Optional] int sel)``` che ora ricarica il parametro con un multiplo di 4 random sino al massimo del parametro per quella classe 
--  Inserito il nome random tra 10 disponibili all'avversario
+- Inserito il parametro ```Skill``` assegnato in fase di creazione del personaggio (che in futuro interagirà con experience). Questo parametro è determinante per calcolare con quanti punti colpisce il giocatore nell'attacco
+- Modifica della funzione ```void RechargAssignement([Optional] int sel)``` che ora ricarica il parametro con un multiplo di 4 random sino al massimo del parametro per quella classe
+- Inserito il nome random tra 10 disponibili all'avversario
 
 ```csharp
     static readonly int[] skillValues = {4, 8, 12};
@@ -1504,6 +1510,8 @@ git push -u origin main
     }
 ```
 
+## Comandi versionamento
+
 ```bash
 git status 
 git add --all
@@ -1511,10 +1519,10 @@ git commit -m "Inserito il parametro skill, inseriti i nomi degli avversari, mod
 git push -u origin main
 ```
 
-## Nona versione
+# Nona versione A
 
--  Implementata la funzionalità della fuga tramite ```bool TryToRunAway()``` e le possibilità di successo sono legata al campo di battaglia e alla classe del giocatore
--  Inserite la variabile ```heroLeak = 2```, il giocatore ha due tentativi per tentare di scappare
+- Implementata la funzionalità della fuga tramite ```bool TryToRunAway()``` e le possibilità di successo sono legata al campo di battaglia e alla classe del giocatore
+- Inserite la variabile ```heroLeak = 2```, il giocatore ha due tentativi per tentare di scappare
 
 ```csharp
 static bool TryToRunAway(){ // Le possibilità di scappare sono legate al campo di battaglia con percentuali diverse a seconda della classe
@@ -1550,6 +1558,8 @@ static bool TryToRunAway(){ // Le possibilità di scappare sono legate al campo 
     }
 ```
 
+## Comandi di versionamento
+
 ```bash
 git status 
 git add --all
@@ -1557,11 +1567,11 @@ git commit -m "Implementata la possibilità di fuggire"
 git push -u origin main
 ```
 
-## Nona versione
+# Nona versione B
 
--  Creata la struttura per le cartelle di salvataggio e configurazione
--  Impostate le funzioni ```static void SaveMenu()``` e ```static void SaveHero()```
--  Modificata la funzione ```static ExpandoObject CharacterSetup(string cClass, bool newHero,  [Optional] string name)``` con il parametro ```newHero``` che resetta tutti i parametri a default ranne ```experience``` e ```skill```
+- Creata la struttura per le cartelle di salvataggio e configurazione
+- Impostate le funzioni ```static void SaveMenu()``` e ```static void SaveHero()```
+- Modificata la funzione ```static ExpandoObject CharacterSetup(string cClass, bool newHero,  [Optional] string name)``` con il parametro ```newHero``` che resetta tutti i parametri a default ranne ```experience``` e ```skill```
 
 ```csharp
     const string SAVEPATH = @".\data\save";    // Path per i files .json da salvare e caricare
@@ -1594,6 +1604,8 @@ git push -u origin main
     }
 ```
 
+## Comandi versionamento
+
 ```bash
 git status 
 git add --all
@@ -1601,12 +1613,12 @@ git commit -m "Iniziato a implementare il salvataggio"
 git push -u origin main
 ```
 
-## Decima versione A
+# Decima versione A
 
--  Implementazione completata di ```static void SaveMenu()``` e ```static void SaveHero()```
--  Aggiunta la libreria ```Newtonsoft.Json``` per gestire la serializzazione/deserializzazione dei file .json
--  Impostata la logica del salvataggio che avviene solo se il personaggio vince lo scontro o se riesce a scappare (se sopravvive)
--  Aggiunta la funzionalità che gestisce l'unicità dei nomi dei file di salvataggio tramite un file .txt, il nome del file viene associato al personaggio ```.parameters[6]``` così se muore ed era stato caricato il file viene eliminato
+- Implementazione completata di ```static void SaveMenu()``` e ```static void SaveHero()```
+- Aggiunta la libreria ```Newtonsoft.Json``` per gestire la serializzazione/deserializzazione dei file .json
+- Impostata la logica del salvataggio che avviene solo se il personaggio vince lo scontro o se riesce a scappare (se sopravvive)
+- Aggiunta la funzionalità che gestisce l'unicità dei nomi dei file di salvataggio tramite un file .txt, il nome del file viene associato al personaggio ```.parameters[6]``` così se muore ed era stato caricato il file viene eliminato
 
 ```csharp
 using System.Dynamic;
@@ -2152,6 +2164,8 @@ class Program{
 }
 ```
 
+## Comandi versionamento
+
 ```bash
 git status 
 git add --all
@@ -2159,9 +2173,9 @@ git commit -m "Menu di salvataggio, salvataggi e nomi univoci dei file implement
 git push -u origin main
 ```
 
-## Decima versione B
+# Decima versione B
 
--  Implementata la funzionalità "carica personaggio" tramite la funzione ```static void LoadHero()``` che visualizza il valore univoco, il nome, la classe, l'esperienza e la skill dei personaggi salvati e permette di selezionare quello da caricare.
+- Implementata la funzionalità "carica personaggio" tramite la funzione ```static void LoadHero()``` che visualizza il valore univoco, il nome, la classe, l'esperienza e la skill dei personaggi salvati e permette di selezionare quello da caricare.
 
 ```csharp
 static void LoadHero(){
@@ -2196,6 +2210,8 @@ static void LoadHero(){
     }
 ```
 
+## Comandi versionamento
+
 ```bash
 git status 
 git add --all
@@ -2203,9 +2219,9 @@ git commit -m "Implementato il caricamento dei personaggi"
 git push -u origin main
 ```
 
-## Undicesima versione
+# Undicesima versione
 
--  Prima embrionale implementazione del sistema di utenti e login tramite DB con l'implementazione di ```static bool CheckDB()``` e ```static void Login()```.
+- Prima embrionale implementazione del sistema di utenti e login tramite DB con l'implementazione di ```static bool CheckDB()``` e ```static void Login()```.
 
 ```csharp
 using System.Dynamic;
@@ -2881,17 +2897,7 @@ class Program{
 }
 ```
 
-```bash
-git status 
-git add --all
-git commit -m "Prima embrionale implementazione del sistema di utenti e login tramite DB"
-git push -u origin main
-```
-
-
-## Undicesima versione B
-
--  Implementazione del sistema di utenti e login tramite DB con l'implementazione.
+## Comandi versionamento
 
 ```bash
 git status 
@@ -2900,10 +2906,25 @@ git commit -m "Prima embrionale implementazione del sistema di utenti e login tr
 git push -u origin main
 ```
 
-## Dodicesima Versione
+# Undicesima versione B
 
--  Riscrittura completa dell'applicazione a causa dell'integrazione delle classi e l'implementazione del design pattern MVC.
--  Livello di completamento intorno al 50% ma con valori diversi a seconda delle parti dell'aplicazione, avanzamento non lineare.
+- Implementazione del sistema di utenti e login tramite DB con l'implementazione.
+
+## Comandi versionamento
+
+```bash
+git status 
+git add --all
+git commit -m "Prima embrionale implementazione del sistema di utenti e login tramite DB"
+git push -u origin main
+```
+
+# Dodicesima Versione
+
+- Riscrittura completa dell'applicazione a causa dell'integrazione delle classi e l'implementazione del design pattern MVC.
+- Livello di completamento intorno al 50% ma con valori diversi a seconda delle parti dell'aplicazione, avanzamento non lineare.
+
+## Comandi versionamento
 
 ```bash
 git status 
@@ -2911,4 +2932,3 @@ git add --all
 git commit -m "Riscrittura completa di PersonalProject con l'implementazione delle classi e del design pattern MVC"
 git push -u origin main
 ```
-

@@ -1,3 +1,9 @@
+/// <summary>
+/// La classe View viene utilizzata per stampare a schermo qualsiasi tipo di messaggio di cui l'applicazione abbia bisogno,
+/// sono implementati anche due semplici metodi di acquisizione di input, una per gli interi e una per le stringhe,
+/// è presente anche un metodo per l'acquisizione delle password che nasconde in console i caratteri inseriti.
+/// Gli unici parametri dei metodi sono stringhe e interi per la personalizzazione dei messaggi.
+/// </summary>
 public class View{
     public View(){
     }
@@ -45,6 +51,21 @@ public class View{
         }
         Console.Write("choice: ");
     }
+
+    public void ParameterToRechargMenu(){
+        Console.Clear();
+        Console.WriteLine("\nSelect the parameter to recharge: ");
+        for(int i = 0; i < DefaultData.ParametersString.Length;i++){
+            Console.WriteLine($"{i+1} {DefaultData.ParametersString[i]}");
+        }
+        Console.Write("\nchoice: ");
+    }
+
+    public void RechargeMessage(string parameter, int value, string who){
+        Console.WriteLine($"\nNow {who} {parameter} is {value}\n\nPlease press any key...");
+        Console.ReadKey();
+    }
+    // Metodo per l'acquisizione delle password che nasconde in console i caratteri inseriti.
     public string GetPassword(){
         string str ="";
         while (true){
@@ -101,10 +122,8 @@ public class View{
         Console.Write("Please enter your hero's name: ");
     }
     public void SessionStarted(string username){
-        Console.WriteLine($"\nWelcome {username}\nPlease press any key...");
+        Console.WriteLine($"\nWelcome {username}\nSession begin!\nPlease press any key...");
         Console.ReadKey();
-        Console.WriteLine($"\nSession begin!\nPlease press any key...");
-        Console.ReadKey(); 
     }
     public void NotValidName(){
         Console.Clear();
@@ -179,9 +198,9 @@ public class View{
         Console.WriteLine($"4 {DefaultData.Attaks[3]}\n");
         Console.Write("\nchoice: ");
     }
-    public void AttakResult(int attakResult, bool turn, int attakType){     // questa funzione stampa il risultato dell'attacco
-        switch(attakResult){                                                // prendendo come parametri anche il turno (noi o la cpu) 
-            case 0:                                                         // e il tipo di attacco
+    public void AttakResult(int attakResult, bool turn, int attakType){
+        switch(attakResult){                                                 
+            case 0:                                                         
                 Console.Clear();
                 if(turn)
                     Console.WriteLine($"\nYour {DefaultData.Attaks[attakType]} had success! You hit your opponent with {DefaultData.HitPoints} of damage!\n\nPress any key...");
@@ -231,11 +250,15 @@ public class View{
         Console.WriteLine("He/she's going to do something...\nPress any key...");
         Console.ReadKey();
     }
+    // Metodo che prende un input in letture e restituisce il valore intero convertito
+    // o -1 se l'imput non è un intero
     public int GetIntInput(){
         if(int.TryParse(Console.ReadLine(), out int input))
             return input;
         return -1;
     }
+    // metodo che acquisisce una stringa e la ritorna
+    // andrà implementato con le verifiche sulla stringa *** TODO LIST ***
     public string GetStringInput(){
         return Console.ReadLine();
     }

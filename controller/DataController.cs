@@ -1,25 +1,40 @@
 using System.Dynamic;
 using Newtonsoft.Json;
+/// <summary>
+/// Classe che si occupa della lettura e della scrittura sui files (configurazione e salvataggio)
+/// .json - .txt - forse .csv
+/// è ancora estremamente incompleta
+/// </summary>
 public class DataController{
+    // Non ancora implementata ma è necessaria
+    // metodo che caricherà i personaggi da .json
     public ExpandoObject ReadJson(){
         return new ExpandoObject();
     }
+    // Non ancora implementata ma non è certo sia necessaria
     public List<string> ReadCsv(){
         return new List<string>();
     }
-    public bool WriteOnJson(Character hero){
-        string path = Path.Combine(DefaultData.SAVEPATH, hero.Name + Character.FileName + ".json");
+    // Metodo che salva il personaggio serializzandolo su di un file .json
+    // c'è una cartella dentro data con il nome di ogni utente e all'interno vengono 
+    // scritti i files e il nome del file è univoco e progressivo
+    public bool WriteOnJson(string name, Character hero){
+        string path = Path.Combine(DefaultData.SAVEPATH, name, Character.FileName + ".json");
+        Character.FileName++;
         File.Create(path).Close();
         using (StreamWriter sw = new StreamWriter(path)){                                          
             sw.Write(JsonConvert.SerializeObject(hero, Formatting.Indented));    
         }
         return true;
     }
+    // medodo che all'uscita del programma scrive su di un file di config .txt l'intero
+    // all'interno della proprietà statica di character - Character.FileName -
     public void WriteOnTxt(){
-        File.WriteAllText(Path.Combine(DefaultData.CONFIGPATH, "fileName.txt"), (++Character.FileName).ToString());
+        File.WriteAllText(Path.Combine(DefaultData.CONFIGPATH, "fileName.txt"), Character.FileName.ToString());
     }
-
-    static public void ReadByTxt(){
+    // medodo che all'avvio del programma legge l'intero all'internodi un file di config .txt e lo scrive
+    // nella proprietà statica di character - Character.FileName -
+    static public void ReadFromTxt(){
         Character.FileName = Convert.ToInt32(File.ReadAllText(Path.Combine(DefaultData.CONFIGPATH, "fileName.txt")));
     }
 
