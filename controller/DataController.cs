@@ -38,19 +38,22 @@ public class DataController{
         Character.FileName = Convert.ToInt32(File.ReadAllText(Path.Combine(DefaultData.CONFIGPATH, "fileName.txt")));
     }
 
-    /*
-        static void LoadHero(){
-        List<string> filesList = new List<string>(Directory.GetFiles(SAVEPATH));
+    // *************************************** //
+    // *********** DA IMPLEMENTARE *********** //
+    // *************************************** //
+    public void LoadHero(string folderName){
+        List<string> filesList = new List<string>(Directory.GetFiles(Path.Combine(DefaultData.SAVEPATH, folderName)));
         if(filesList.Count!=0){
             Console.Clear();
             Console.WriteLine("Select the Hero to load by unique ref: \n");
-            foreach(string s in filesList){
-                string json = File.ReadAllText(s);
-                dynamic obj = JsonConvert.DeserializeObject(json);
-                Console.WriteLine($"\nRef -> {obj.parameters[6]} < - Hero's name = {obj.name} class = {obj.cClass} experience = {obj.parameters[5]} skill = {obj.parameters[4]}");
+            for(int i = 0; i < filesList.Count; i++){
+                
+                string json = File.ReadAllText(filesList[i]);
+                Character character = new Character(JsonConvert.DeserializeObject(json));
+                Console.WriteLine($"\nRef -> {i+1} < - Hero's name = {character.Name} class = {character.Class} experience = {character.Parameters[5]} skill = {character.Parameters[4]}");
             }
             Console.WriteLine("\nchoice: \n");
-            while(true){
+            /*while(true){
                 string path;
                 if(int.TryParse(Console.ReadLine(), out int selection)){
                     path = Path.Combine(SAVEPATH, selection + ".json");
@@ -66,7 +69,7 @@ public class DataController{
                 }else{
                     Console.WriteLine("Please enter a valid choice: \n");
                 }
-            }
+            }*/
         }
-    }*/
+    }
 }

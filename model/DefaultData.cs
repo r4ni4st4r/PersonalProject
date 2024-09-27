@@ -1,11 +1,11 @@
 /// <summary>
-/// Classe statica di dati con all'interno solo campi in sola lettura accessibili tramite proprietà pubbliche
+/// Classe statica di dati con all'interno solo campi in sola lettura accessibili tramite proprietà staiche pubbliche
 /// In futuro i campi verranno popolati tramite file di configurazione esterni
 /// </summary>
 static class DefaultData{
     public const string SAVEPATH = @".\data\save";    
     public const string CONFIGPATH = @".\data\config";
-    public const string DBPATH = @".\data\database.db";
+    public const string DBPATH = @".\data\AppDatabase.db";
     private static readonly string[] _environments = {"Arena", "Dark city alley", "Ancient castle"};
     private static readonly string[]  _characterClasses = {"Warrior", "Thief", "Wizard"};
     private static readonly string[] _attaks = {"Charged attack", "Archery shot", "Spell", "Try to run away"};

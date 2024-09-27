@@ -3,13 +3,23 @@
 /// id è valore univoco generato dal database.
 /// </summary>
 public class User{
-    private int _id;
-    private string _name;
-    public int Id{get{return _id;}}
-    public string Name{get{return _name;}}
+    public int Id{get;set;}
+    public string Name{get;set;}
+    public string Password{get;set;}
 
     public User(int id, string name){
-        _id = id;
-        _name = name;
+        Id = id;
+        Name = name;
+    }
+    public User(string name, string password){
+        Name = name;
+        Password = password;
+    }
+    public User(string name, string password, int id){
+        Name = name;
+        Password = password;
+        Id = id;
+    }
+    public User(){
     }
 }

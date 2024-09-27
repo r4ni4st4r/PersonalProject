@@ -1,6 +1,6 @@
 /// <summary>
 /// La classe View viene utilizzata per stampare a schermo qualsiasi tipo di messaggio di cui l'applicazione abbia bisogno,
-/// sono implementati anche due semplici metodi di acquisizione di input, una per gli interi e una per le stringhe,
+/// sono implementati anche due semplici metodi di acquisizione di input, una per gli interi e uno per le stringhe,
 /// è presente anche un metodo per l'acquisizione delle password che nasconde in console i caratteri inseriti.
 /// Gli unici parametri dei metodi sono stringhe e interi per la personalizzazione dei messaggi.
 /// </summary>
@@ -66,6 +66,31 @@ public class View{
         Console.ReadKey();
     }
     // Metodo per l'acquisizione delle password che nasconde in console i caratteri inseriti.
+   /* public string GetPassword(){
+        string input = "";
+        ConsoleKeyInfo key;
+
+        do
+        {
+            // Legge il tasto premuto
+            key = Console.ReadKey(intercept: true);
+
+            // Se il tasto è "Enter", termina la lettura
+            if (key.Key != ConsoleKey.Enter)
+            {
+                // Aggiungi il carattere alla stringa di input
+                input += key.KeyChar;
+
+                // Stampa un asterisco
+                Console.Write("*");
+            }
+        }
+        while (key.Key != ConsoleKey.Enter);
+
+        // Ritorna la stringa immessa
+        return input;
+    }*/
+
     public string GetPassword(){
         string str ="";
         while (true){
@@ -74,6 +99,7 @@ public class View{
                 break;
             } else if (i.Key == ConsoleKey.Backspace){
                 if (str.Length > 0){
+                    Console.WriteLine("dentro il ciclo");
                     str.Remove(str.Length - 1);
                     Console.Write("\b \b");
                 }
@@ -110,16 +136,34 @@ public class View{
     }
 
     public void EnterPassword(){
+        Console.Clear();
         Console.Write("\nPlease enter a password: ");
     }
-    public void PasswordEmptyError(){
+    public void InvalidPasswordError(){
         Console.Clear();
-        Console.Write("\nPassword can't be empty...\nPlease press any key...\n");
+        Console.Write("\nInvalid password...\nPlease press any key...\n");
         Console.ReadKey();
+    }
+    public void WrongPasswordError(){
+        Console.Clear();
+        Console.Write("\nWrong Password...\nPlease press any key...\n");
+        Console.ReadKey();
+    }
+    public void RetryMenu(){
+        Console.Clear();
+        Console.WriteLine($"Do you want to retry?");
+        Console.WriteLine($"1 YES!");
+        Console.WriteLine($"2 NO!");
+        Console.Write("\nChoice: ");
     }
     public void EnterHeroNeme(){
         Console.Clear();
         Console.Write("Please enter your hero's name: ");
+    }
+    public void ExitMessage(){
+        Console.Clear();
+        Console.WriteLine($"BYE BYE!!!");
+        Console.ReadKey();
     }
     public void SessionStarted(string username){
         Console.WriteLine($"\nWelcome {username}\nSession begin!\nPlease press any key...");
@@ -128,6 +172,17 @@ public class View{
     public void NotValidName(){
         Console.Clear();
         Console.WriteLine("\nEnter a valid name!\nPlease enter a key...");
+        Console.ReadKey();
+    }
+    public void UserDoesntExistError(string username){
+        Console.Clear();
+        Console.WriteLine($"\n{username} not found!\nPlease enter a key...");
+        Console.ReadKey();
+    }
+
+    public void UserAlreadyExistError(string username){
+        Console.Clear();
+        Console.WriteLine($"\n{username} already exist!\nPlease enter a key...");
         Console.ReadKey();
     }
     public void InvalidChoice(){

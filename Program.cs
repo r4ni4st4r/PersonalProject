@@ -5,7 +5,7 @@
 class Program{
     public static void Main(string[] args){
         DataController.ReadFromTxt();
-        Database _db = new Database();
+        AppDatabase _db = new AppDatabase();
         View _view = new View();
         DataController _dc = new DataController();
         Controller _controller = new Controller(_db,_view,_dc);

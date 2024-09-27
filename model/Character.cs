@@ -13,10 +13,10 @@ public class Character{
     public string Class{get {return _class;}}
     // Tre costruttori (solo uno utilizzato) ma essendo ancora in versione pre-alpha
     // devo ancora verificare la loro utilità
-    public Character(string name, string cClass, int[] parameters){
-        _name = name;
-        _class = cClass;
-        Parameters = parameters;
+    public Character(dynamic obj){
+        _name = obj.Name;
+        _class = obj.Class;
+        Parameters = obj.Parameters;
     }
     public Character(string name, string cClass){
         _name = name;

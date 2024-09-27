@@ -17,7 +17,7 @@ public class Controller{
     private Environment _environment;
     // Personaggio avversario
     private Character _villain;
-    private Database _db;
+    private AppDatabase _db;
     private View _view;
     private User _currentUser;
     //private List<Environment> _environments = new List<Environment>(); *** probabilmente inutile ***
@@ -29,7 +29,7 @@ public class Controller{
     public bool MainMenuWhile{get;set;}
     public bool LoginMenuWhile{get;set;}
 
-    public Controller(Database db, View view, DataController dataController){
+    public Controller(AppDatabase db, View view, DataController dataController){
         _db = db;
         _view = view;
         _dataController = dataController;
@@ -48,17 +48,23 @@ public class Controller{
                     // Demanda al metodo della classe database di fare la login 
                     // e ritorna l'utente loggato
                     _currentUser = _db.Login();
-                    LoginMenuWhile = false;
+                    if(_currentUser != null)
+                        LoginMenuWhile = false;
                     break;
                 case 2:
                     // Registrazione non ancora implementata
                     // sarà un metodo della classe database 
-                    CreateUser();
+                    _currentUser = _db.CreateUser();
+                    if(_currentUser != null)
+                        LoginMenuWhile = false;
                     break;
                 case 3:
                     // Cancellazione non ancora implementata
                     // sarà un metodo della classe database 
-                    DeleteUser();
+                    //_view.DeleteUser();
+                    break;
+                case 4:
+                    _view.ExitMessage();
                     return;
                 default:
                     _view.InvalidChoice();
@@ -91,7 +97,7 @@ public class Controller{
                     break;
                 case 2:
                     if(!HeroSelected)
-                        LoadHero();
+                        _dataController.LoadHero(_currentUser.Name);
                     else
                         _view.HeroAlreadyCreated();
                     break;
@@ -121,12 +127,6 @@ public class Controller{
                     break;
             }
         }
-    }
-    private void CreateUser(){
-        _view.NotImplementedYet();
-    }
-    private void DeleteUser(){
-        _view.NotImplementedYet();
     }
     private void LoadHero(){
         _view.NotImplementedYet();
@@ -316,6 +316,7 @@ public class Controller{
             character.Parameters[5] = heroObj.parameters[5];*/
 
         }
+        character.EscapePossibilities = 2;
         HeroSelected = true;
         return character;
     }
@@ -396,6 +397,7 @@ public class Controller{
                                 success= TryToRunAway();
                                 if(success){
                                     ranAway = true;
+                                    _dataController.WriteOnJson(_currentUser.Name, _hero);
                                     //*******************************************************
                                     //saveMenu = true;
                                     //*******************************************************
