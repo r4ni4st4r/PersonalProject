@@ -92,15 +92,15 @@ public class View{
     }*/
 
     public string GetPassword(){
-        string str ="";
+        string str = "";
         while (true){
             ConsoleKeyInfo i = Console.ReadKey(true);
             if (i.Key == ConsoleKey.Enter){
                 break;
             } else if (i.Key == ConsoleKey.Backspace){
                 if (str.Length > 0){
-                    Console.WriteLine("dentro il ciclo");
-                    str.Remove(str.Length - 1);
+                    // ******** DA VERIFICARE LA CORRETTEZZA **********
+                    str = str.Remove(str.Length - 1);
                     Console.Write("\b \b");
                 }
             }else if (i.KeyChar != '\u0000' ){ // KeyChar == '\u0000' if the key pressed does not correspond to a printable character, e.g. F1, Pause-Break, etc

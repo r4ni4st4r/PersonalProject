@@ -23,7 +23,7 @@ public class DataController{
         Character.FileName++;
         File.Create(path).Close();
         using (StreamWriter sw = new StreamWriter(path)){                                          
-            sw.Write(JsonConvert.SerializeObject(hero, Formatting.Indented));    
+            sw.Write(JsonConvert.SerializeObject(hero, Formatting.Indented));  
         }
         return true;
     }
